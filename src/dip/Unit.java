@@ -63,4 +63,14 @@ public class Unit {
         this.orderHistory = new ArrayList<>();
     }
 
+    public String toString() {
+        String output = parentNation.getAdjective() + " ";
+        if (unitType == 0)
+            output += "A ";
+        else
+            output += "F ";
+        output += position.name();
+        return output;
+    }
+
 }

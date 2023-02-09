@@ -102,25 +102,6 @@ public class GameState implements Runnable {
     }
 
     /**
-     * @return The dip.Season + Year abbreviation - e.g. "F01"
-     */
-    public static String tag() {
-        String tag = "";
-        if (season == Season.SPRING)
-            tag += "S";
-        else if (season == Season.FALL)
-            tag += "F";
-        else /*if (season == season.WINTER)*/
-            tag += "W";
-        if (gameYear < 1910)
-            tag += "0";
-        tag += (gameYear - 1900);
-        if (retreats)
-            tag += "R";
-        return tag;
-    }
-
-    /**
      * Sub-method of checkEndStates()
      * @return True if the size of the dip.Nation's states is 0, else false
      */
@@ -275,9 +256,8 @@ public class GameState implements Runnable {
             }
         }
 
-        for (Order order : allOrders) {
-            resolve(0);
-        }
+        Adjudicator adjudicator = new Adjudicator(allOrders);
+        adjudicator.resolve();
 
     }
 
@@ -351,6 +331,25 @@ public class GameState implements Runnable {
 
     private static void backupRule(int nr) {
 
+    }
+
+    /**
+     * @return The dip.Season + Year abbreviation - e.g. "F01"
+     */
+    public static String tag() {
+        String tag = "";
+        if (season == Season.SPRING)
+            tag += "S";
+        else if (season == Season.FALL)
+            tag += "F";
+        else /*if (season == season.WINTER)*/
+            tag += "W";
+        if (gameYear < 1910)
+            tag += "0";
+        tag += (gameYear - 1900);
+        if (retreats)
+            tag += "R";
+        return tag;
     }
 
 }
