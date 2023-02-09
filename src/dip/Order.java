@@ -9,6 +9,7 @@ public class Order {
     OrderType orderType;  // -1 = NMR, 0 = hold, 1 = move, 2 = support, 3 = convoy
     Province pr1;
     Province pr2;
+    boolean dislodged;
 
     private boolean testValidity() {
         return true;  // TODO - .borders(), etc.
@@ -19,6 +20,7 @@ public class Order {
         this.orderType = orderType;
         this.pr1 = provinceSlot1;
         this.pr2 = provinceSlot2;
+        this.dislodged = false;
     }
 
     public Order(Unit parentUnit) {  // NMR
@@ -26,6 +28,7 @@ public class Order {
         this.orderType = OrderType.NONE;
         this.pr1 = null;  // Keep these null assignments in mind
         this.pr2 = null;
+        this.dislodged = false;
     }
 
     public String toString() {

@@ -5,5 +5,6 @@ public enum OrderType {
     HOLD,
     MOVE,
     SUPPORT,
-    CONVOY;
+    CONVOY,
+    MOVE_VIA_CONVOY;
 }
