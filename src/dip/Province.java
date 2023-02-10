@@ -114,6 +114,18 @@ public enum Province {
         this.supplyCenter = false;
     }
 
+    boolean isAdjacentTo(Province province) {
+        return true;  // TODO
+    }
+
+    boolean isCoastal() {
+        return (waterAccess == 1);
+    }
+
+    boolean isSupplyCenter() {
+        return supplyCenter;
+    }
+
     String getName() {
         return name;
     }

@@ -30,6 +30,23 @@ public class Adjudicator {
         Map<Order, OrderResolution> orderResolutions = new HashMap<>();
 
         Map<Order, Integer> strengthMap = new HashMap<>();
+        Map<Order, Integer> supportCounts = new HashMap<>();
+
+        for (Order order : orders)
+            supportCounts.put(order, 0);
+
+        Map<Order, Order> supportMap = new HashMap<>();
+
+        List<Order> convoyingArmies = findConvoyingArmies(orders);
+        Map<Order, List<Order>> convoyPaths = new HashMap<>();
+
+        for (Order convoyingArmy : convoyingArmies) {
+            List<Order> convoyPath = drawConvoyPath(orders, convoyingArmy);
+            if (convoyPath.size() == 0)
+                convoyingArmy.orderType = OrderType.VOID;
+            else
+                convoyPaths.put(convoyingArmy, convoyPath);
+        }
 
         List<Order> contestedOrders = findContestedOrders(orders);
         List<Order> correspondingSupports = findCorrespondingSupports(orders, contestedOrders);
@@ -39,26 +56,78 @@ public class Adjudicator {
         printOrders(correspondingSupports, "CORRESPONDING SUPPORTS:");
         System.out.println("======\n");
 
-        List<Order> supportsToCut = new ArrayList<>();
-        for (Order order : contestedOrders) {
+        List<Order> invalidSupports = new ArrayList<>();
+        for (Order order : orders) {
             if (order.orderType == OrderType.SUPPORT) {
-                List<Order> attackers = findAttackers(contestedOrders, order);
+                List<Order> orders2 = orders;
+                if (!order.pr1.isAdjacentTo(order.pr2))  // The only reason e.g. Bel S Lon - Hol would work is if e.g. NTH C Lon - Hol
+                    orders2 = convoyingArmies;
+                boolean found = false;
+                for (Order order2 : orders2) {
+                    if (order.equals(order2)) continue;
+                    if (order.pr1.equals(order2.parentUnit.getPosition())) {
+                        found = true;
+                        supportMap.put(order, order2);
+                        if (order2.orderType == OrderType.MOVE) {  // Support-to-hold on a MOVE order
+                            if (order.pr1.equals(order.pr2))
+                                invalidSupports.add(order);
+                        } else {
+                            if (!order.pr1.equals(order.pr2))  // Support-to-move on a stationary order
+                                invalidSupports.add(order);
+                        }
+                        break;
+                    }
+                }
+                if (!found)  // No corresponding order taking the support
+                    invalidSupports.add(order);
+            }
+        }
+
+        // Replace invalid supports with holds
+        for (Order invalidSupport : invalidSupports) {
+            orders.remove(invalidSupport);
+            orders.add(new Order(invalidSupport.parentUnit, OrderType.HOLD, invalidSupport.parentUnit.getPosition(), invalidSupport.parentUnit.getPosition()));
+        }
+
+        // Increment the support count for all [implicitly] valid supports
+        for (Order order : orders) {
+            if (order.orderType != OrderType.SUPPORT) continue;
+            supportCounts.put(supportMap.get(order), supportCounts.get(supportMap.get(order))+1);
+        }
+
+        // Set the 'no help' flags for supports on move orders attacking units of the same Nation
+        for (Order supportOrder : supportMap.keySet()) {
+            Order supportedOrder = supportMap.get(supportOrder);
+            if (supportedOrder.orderType != OrderType.MOVE) continue;
+            Unit attackedUnit = findUnitAtPosition(supportedOrder.pr1, orders);
+            if (attackedUnit != null) {
+                if (attackedUnit.getParentNation() == supportOrder.parentUnit.getParentNation())
+                    supportedOrder.noHelpList.add(supportOrder);
+            }
+        }
+
+        List<Order> supportsToCut = new ArrayList<>();
+        List<Order> contestedOrdersNoConvoys = new ArrayList<>(contestedOrders);
+        contestedOrdersNoConvoys.removeAll(convoyingArmies);
+
+        for (Order contestedOrder : contestedOrdersNoConvoys) {
+            if (contestedOrder.orderType == OrderType.SUPPORT) {
+                List<Order> attackers = findAttackers(contestedOrders, contestedOrder);
                 boolean cut = false;
                 for (Order attacker : attackers) {
-                    if (!attacker.pr1.equals(order.pr2)) {  // Support cannot be cut by unit being attacked by supportee
+                    if (!attacker.pr1.equals(contestedOrder.pr2)) {  // Support cannot be cut by unit being attacked by supportee
                         cut = true;
                         break;
                     }
                 }
                 if (cut) {
-                    orders.remove(order);
-                    supportsToCut.add(order);
+                    orders.remove(contestedOrder);
+                    supportsToCut.add(contestedOrder);
                 }
-                // Note: We cannot be sure the support order succeeds if it simply isn't cut: it can be cut if dislodged also
+                // Note: We cannot be sure the support order succeeds if it simply isn't cut: it can still be cut if dislodged under *all* conditions
             }
         }
         contestedOrders.removeAll(supportsToCut);
-
         supportsToCut = cutSupports(supportsToCut);
         orders.addAll(supportsToCut);
         contestedOrders.addAll(supportsToCut);
@@ -71,8 +140,121 @@ public class Adjudicator {
                 orderResolutions.put(order, OrderResolution.UNRESOLVED);
         }
 
-        strengthMap = calculateStrengths(contestedOrders, orderResolutions);
+        Map<Province, List<Order>> battleList = populateBattleList(contestedOrdersNoConvoys);
 
+        for (Order convoyingArmy : convoyingArmies) {
+
+        }
+
+        /////
+        //strengthMap = calculateStrengths(contestedOrders, orderResolutions);
+
+    }
+
+    /*private Order checkDisruptions(Order convoyedArmy, List<Order> convoyPath) {
+
+        for (Order convoyingFleet : convoyPath) {
+
+        }
+
+    }*/ // TODO
+
+    private Unit findUnitAtPosition(Province province, List<Order> orders) {
+        for (Order order : orders) {
+            if (order.parentUnit.getPosition().equals(province))
+                return order.parentUnit;
+        }
+        return null;
+    }
+
+    private Map<Province, List<Order>> populateBattleList(List<Order> orders) {
+
+        Map<Province, List<Order>> battleList = new HashMap<>();
+
+        for (Province province : Province.values()) {
+            for (Order order : orders) {
+                List<Order> combatants = new ArrayList<>();
+                if (order.orderType == OrderType.MOVE) {
+                    if (order.pr1.equals(province))
+                        combatants.add(order);
+                } else {
+                    if (order.parentUnit.getPosition().equals(province))
+                        combatants.add(order);
+                }
+                if (combatants.size() > 0)
+                    battleList.put(province, combatants);
+            }
+        }
+        return battleList;
+
+    }
+
+    private List<Order> findConvoyingArmies(List<Order> orders) {
+        List<Order> convoyingArmies = new ArrayList<>();
+        for (Order order : orders) {
+            if (order.orderType != OrderType.MOVE) continue;
+            if (!order.parentUnit.getPosition().isCoastal()) continue;  // You can't convoy inland
+            if (!order.parentUnit.getPosition().isAdjacentTo(order.pr1))
+                convoyingArmies.add(order);
+        }
+        return convoyingArmies;
+    }
+
+    private List<Order> drawConvoyPath(List<Order> orders, Order moveOrder) {
+
+        List<Order> convoyPath;
+        List<Order> beginningConvoys = new ArrayList<>();
+        for (Order order : orders) {
+            if (order.equals(moveOrder)) continue;  // Technically unnecessary
+            if (order.parentUnit.getUnitType() == 1) continue;  // You can't convoy over an army
+            if (order.orderType != OrderType.CONVOY) continue;
+            if (order.pr1.equals(moveOrder.parentUnit.getPosition()) && order.pr2.equals(moveOrder.pr1) && order.parentUnit.getPosition().isAdjacentTo(moveOrder.parentUnit.getPosition())) {
+                beginningConvoys.add(order);
+            }
+        }
+
+        if (beginningConvoys.size() == 0)
+            return beginningConvoys;
+
+        Order firstConvoy = beginningConvoys.get(0);
+        List<Order> initPath = new ArrayList<>();
+        initPath.add(firstConvoy);
+        convoyPath = drawOneConvoyPath(orders, firstConvoy, initPath, new ArrayList<>());
+
+        return convoyPath;
+
+    }
+
+    private List<Order> drawOneConvoyPath(List<Order> orders, Order firstConvoy, List<Order> convoyPath, List<Order> excludedOrders) {
+        List<Order> adjacentConvoys = findAdjacentConvoys(orders, firstConvoy, convoyPath);
+
+        adjacentConvoys.removeIf(excludedOrders::contains);
+
+        if (adjacentConvoys.size() == 0)
+            return convoyPath;
+
+        convoyPath.add(adjacentConvoys.get(0));
+        excludedOrders.add(adjacentConvoys.get(0));
+        return drawOneConvoyPath(orders, adjacentConvoys.get(0), convoyPath, excludedOrders);
+    }
+
+    /**
+     * Locate convoy orders identical to `convoyOrder` and adjacent to its unit
+     * @param orders List of orders
+     * @param convoyOrder Matching convoy order
+     * @return List of adjacent fleets convoying the same army
+     */
+    private List<Order> findAdjacentConvoys(Collection<Order> orders, Order convoyOrder, Collection<Order> excludedOrders) {
+        List<Order> adjacentConvoys = new ArrayList<>();
+        for (Order order : orders) {
+            if (excludedOrders.contains(order)) continue;
+            if (order.equals(convoyOrder)) continue;  // Technically unnecessary
+            if (order.orderType != OrderType.CONVOY) continue;
+            if (order.pr1.equals(convoyOrder.pr1) && order.pr2.equals(convoyOrder.pr2) && order.parentUnit.getPosition().isAdjacentTo(convoyOrder.parentUnit.getPosition())) {
+                adjacentConvoys.add(order);
+            }
+        }
+        return adjacentConvoys;
     }
 
     private List<Order> findAttackers(Collection<Order> orders, Order matching) {

@@ -1,5 +1,8 @@
 package dip;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Order {
 
     OrderState state;  //  Unresolved (0), Guessing (1), Resolved (2)
@@ -10,6 +13,8 @@ public class Order {
     Province pr1;
     Province pr2;
     boolean dislodged;
+    boolean endangered;
+    List<Order> noHelpList = new ArrayList<>();  // List of Orders that this order cannot receive support from under certain circumstances, most notably same-power support
 
     private boolean testValidity() {
         return true;  // TODO - .borders(), etc.
