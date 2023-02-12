@@ -139,6 +139,13 @@ public class Adjudicator {
                 convoyingArmiesSuccessesInner = successfulConvoyingArmies.size();
                 for (Order convoyingArmy : convoyingArmies) {
                     checkDisruptions(convoyingArmy);
+                    if (convoyingArmy.convoyEndangered) {
+                        convoyingArmy.convoyAttacked = true;
+                    } else {
+                        cutSupport(convoyingArmy);
+                        if (!successfulConvoyingArmies.contains(convoyingArmy))
+                            successfulConvoyingArmies.add(convoyingArmy);
+                    }
                 }
             }
 
@@ -242,14 +249,6 @@ public class Adjudicator {
                 continue;
             convoyingArmy.convoyEndangered = true;
             return;
-        }
-
-        if (convoyingArmy.convoyEndangered) {
-            convoyingArmy.convoyAttacked = true;
-        } else {
-            cutSupport(convoyingArmy);
-            if (!successfulConvoyingArmies.contains(convoyingArmy))
-                successfulConvoyingArmies.add(convoyingArmy);
         }
 
     }
