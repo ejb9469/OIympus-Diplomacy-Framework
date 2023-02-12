@@ -12,8 +12,19 @@ public class Order {
     OrderType orderType;  // -1 = NMR, 0 = hold, 1 = move, 2 = support, 3 = convoy
     Province pr1;
     Province pr2;
-    boolean dislodged;
-    boolean endangered;
+
+    boolean dislodged = false;
+
+    // Move flags
+    boolean bounce = false;
+
+    // Convoy flags
+    boolean convoyEndangered = false;
+    boolean convoyAttacked = false;
+    boolean noConvoy = false;
+
+    // Support flags
+    boolean cut = false;
     List<Order> noHelpList = new ArrayList<>();  // List of Orders that this order cannot receive support from under certain circumstances, most notably same-power support
 
     private boolean testValidity() {

@@ -21,24 +21,36 @@ public class Adjudicator {
         orders.add(new Order(new Unit(Nation.FRANCE, Province.Ruh, 0), OrderType.MOVE, Province.Hol, Province.Hol));
         orders.add(new Order(new Unit(Nation.GERMANY, Province.Hol, 0), OrderType.SUPPORT, Province.Ruh, Province.Bel));
         orders.add(new Order(new Unit(Nation.ITALY, Province.ION, 1), OrderType.MOVE, Province.Tun, Province.Tun));
+        orders.add(new Order(new Unit(Nation.ENGLAND, Province.Lon, 0), OrderType.MOVE, Province.Den, Province.Den));
+        orders.add(new Order(new Unit(Nation.ENGLAND, Province.NTH, 1), OrderType.CONVOY, Province.Lon, Province.Den));
+        orders.add(new Order(new Unit(Nation.RUSSIA, Province.Nwy, 1), OrderType.MOVE, Province.NTH, Province.NTH));
+        orders.add(new Order(new Unit(Nation.RUSSIA, Province.NWG, 1), OrderType.SUPPORT, Province.Nwy, Province.NTH));
         new Adjudicator(orders).resolve();
     }
+
+    Map<Order, Integer> strengthMap = new HashMap<>();
+    Map<Order, Integer> supportCounts = new HashMap<>();
+
+    Map<Order, Order> supportMap = new HashMap<>();
+
+    List<Order> convoyingArmies = new ArrayList<>();
+    Map<Order, List<Order>> convoyPaths = new HashMap<>();
+
+    List<Order> successfulConvoyingArmies = new ArrayList<>();
+
+    List<Order> contestedOrders = new ArrayList<>();
+    List<Order> correspondingSupports = new ArrayList<>();
+
+    Map<Province, List<Order>> battleList = new HashMap<>();
 
     void resolve() {
 
         List<Order> orders = new ArrayList<>(ordersList);
-        Map<Order, OrderResolution> orderResolutions = new HashMap<>();
-
-        Map<Order, Integer> strengthMap = new HashMap<>();
-        Map<Order, Integer> supportCounts = new HashMap<>();
 
         for (Order order : orders)
             supportCounts.put(order, 0);
 
-        Map<Order, Order> supportMap = new HashMap<>();
-
-        List<Order> convoyingArmies = findConvoyingArmies(orders);
-        Map<Order, List<Order>> convoyPaths = new HashMap<>();
+        convoyingArmies = findConvoyingArmies(orders);
 
         for (Order convoyingArmy : convoyingArmies) {
             List<Order> convoyPath = drawConvoyPath(orders, convoyingArmy);
@@ -48,8 +60,8 @@ public class Adjudicator {
                 convoyPaths.put(convoyingArmy, convoyPath);
         }
 
-        List<Order> contestedOrders = findContestedOrders(orders);
-        List<Order> correspondingSupports = findCorrespondingSupports(orders, contestedOrders);
+        contestedOrders = findContestedOrders(orders);
+        correspondingSupports = findCorrespondingSupports(orders, contestedOrders);
 
         printOrders(orders, "ALL ORDERS:");
         printOrders(contestedOrders, "CONTESTED ORDERS:");
@@ -92,16 +104,16 @@ public class Adjudicator {
         // Increment the support count for all [implicitly] valid supports
         for (Order order : orders) {
             if (order.orderType != OrderType.SUPPORT) continue;
-            supportCounts.put(supportMap.get(order), supportCounts.get(supportMap.get(order))+1);
+            supportCounts.put(supportMap.get(order), supportCounts.get(supportMap.get(order)) + 1);
         }
 
         // Set the 'no help' flags for supports on move orders attacking units of the same Nation
         for (Order supportOrder : supportMap.keySet()) {
             Order supportedOrder = supportMap.get(supportOrder);
             if (supportedOrder.orderType != OrderType.MOVE) continue;
-            Unit attackedUnit = findUnitAtPosition(supportedOrder.pr1, orders);
+            Order attackedUnit = findUnitAtPosition(supportedOrder.pr1, orders);
             if (attackedUnit != null) {
-                if (attackedUnit.getParentNation() == supportOrder.parentUnit.getParentNation())
+                if (attackedUnit.parentUnit.getParentNation() == supportOrder.parentUnit.getParentNation())
                     supportedOrder.noHelpList.add(supportOrder);
             }
         }
@@ -111,6 +123,49 @@ public class Adjudicator {
         contestedOrdersNoConvoys.removeAll(convoyingArmies);
 
         for (Order contestedOrder : contestedOrdersNoConvoys) {
+            if (contestedOrder.orderType != OrderType.MOVE) continue;
+            cutSupport(contestedOrder);
+        }
+
+        battleList = populateBattleList(contestedOrdersNoConvoys);
+
+        // CONVOYING ARMIES PROCEDURE \\
+        int convoyingArmiesSuccessesOuter = -1;
+        while (successfulConvoyingArmies.size() > convoyingArmiesSuccessesOuter) {
+            convoyingArmiesSuccessesOuter = successfulConvoyingArmies.size();
+
+            int convoyingArmiesSuccessesInner = -1;
+            while (successfulConvoyingArmies.size() > convoyingArmiesSuccessesInner) {
+                convoyingArmiesSuccessesInner = successfulConvoyingArmies.size();
+                for (Order convoyingArmy : convoyingArmies) {
+                    checkDisruptions(convoyingArmy);
+                }
+            }
+
+            for (Order convoyingArmy : convoyingArmies) {
+                checkDisruptions(convoyingArmy);
+                if (convoyingArmy.convoyEndangered) {
+                    convoyingArmy.noConvoy = true;
+                    supportCounts.replace(convoyingArmy, 0);
+                    for (Order supportOrder : supportMap.keySet()) {
+                        if (supportMap.get(supportOrder).equals(convoyingArmy))
+                            supportMap.get(supportOrder).noConvoy = true;
+                    }
+                } else if (convoyingArmy.convoyAttacked) {
+                    convoyingArmy.convoyAttacked = false;
+                    cutSupport(convoyingArmy);
+                    if (!successfulConvoyingArmies.contains(convoyingArmy))
+                        successfulConvoyingArmies.add(convoyingArmy);
+                }
+            }
+
+        }
+
+        System.out.println("\nDONE!!");
+
+        ////
+
+        /*for (Order contestedOrder : contestedOrdersNoConvoys) {
             if (contestedOrder.orderType == OrderType.SUPPORT) {
                 List<Order> attackers = findAttackers(contestedOrders, contestedOrder);
                 boolean cut = false;
@@ -140,34 +195,74 @@ public class Adjudicator {
                 orderResolutions.put(order, OrderResolution.UNRESOLVED);
         }
 
-        Map<Province, List<Order>> battleList = populateBattleList(contestedOrdersNoConvoys);
-
-        for (Order convoyingArmy : convoyingArmies) {
-
-        }
-
         /////
         //strengthMap = calculateStrengths(contestedOrders, orderResolutions);
+        */
 
     }
 
-    /*private Order checkDisruptions(Order convoyedArmy, List<Order> convoyPath) {
+    private void cutSupport(Order moveOrder) {
+        Order defender = findUnitAtPosition(moveOrder.pr1, contestedOrders);
+        if (defender == null) return;
+        if (defender.orderType != OrderType.SUPPORT) return;
+        if (defender.cut) return;
+        if (moveOrder.parentUnit.getParentNation() == defender.parentUnit.getParentNation()) return;
+        if (convoyingArmies.contains(moveOrder)) {
+            System.out.println("Adjudicator.cutSupport() is handling a convoying army...");  // Debug
+        }
+        defender.cut = true;
+        Order supported = supportMap.get(defender);
+        if (supported == null) return;
+        supportCounts.replace(supported, supportCounts.get(supported) - 1);
+        supported.noHelpList.remove(defender);
+    }
 
+    private void checkDisruptions(Order convoyingArmy) {
+
+        List<Order> convoyPath = convoyPaths.get(convoyingArmy);
         for (Order convoyingFleet : convoyPath) {
-
+            List<Order> battlers = battleList.get(convoyingFleet.parentUnit.getPosition());
+            boolean beleaguered = false;
+            int maxStrength = 0;
+            if (battlers.size() == 0) continue;
+            Order strongestBattler = null;
+            for (Order battler : battlers) {
+                int battlerSupports = supportCounts.get(battler);
+                if (battlerSupports > maxStrength) {
+                    strongestBattler = battler;
+                    maxStrength = battlerSupports;
+                    beleaguered = false;
+                } else if (battlerSupports == maxStrength) {
+                    beleaguered = true;
+                }
+            }
+            if (strongestBattler == null) continue;
+            if (beleaguered) continue;
+            if (convoyingFleet.parentUnit.getParentNation() == strongestBattler.parentUnit.getParentNation())
+                continue;
+            convoyingArmy.convoyEndangered = true;
+            return;
         }
 
-    }*/ // TODO
+        if (convoyingArmy.convoyEndangered) {
+            convoyingArmy.convoyAttacked = true;
+        } else {
+            cutSupport(convoyingArmy);
+            if (!successfulConvoyingArmies.contains(convoyingArmy))
+                successfulConvoyingArmies.add(convoyingArmy);
+        }
 
-    private Unit findUnitAtPosition(Province province, List<Order> orders) {
+    }
+
+    private Order findUnitAtPosition(Province province, Collection<Order> orders) {
         for (Order order : orders) {
             if (order.parentUnit.getPosition().equals(province))
-                return order.parentUnit;
+                return order;
         }
         return null;
     }
 
-    private Map<Province, List<Order>> populateBattleList(List<Order> orders) {
+    private Map<Province, List<Order>> populateBattleList(Collection<Order> orders) {
 
         Map<Province, List<Order>> battleList = new HashMap<>();
 
@@ -193,7 +288,8 @@ public class Adjudicator {
         List<Order> convoyingArmies = new ArrayList<>();
         for (Order order : orders) {
             if (order.orderType != OrderType.MOVE) continue;
-            if (!order.parentUnit.getPosition().isCoastal()) continue;  // You can't convoy inland
+            if (!order.parentUnit.getPosition().isCoastal()) continue;  // You can't convoy from or to inland provinces
+            if (!order.pr1.isCoastal()) continue;
             if (!order.parentUnit.getPosition().isAdjacentTo(order.pr1))
                 convoyingArmies.add(order);
         }
@@ -206,7 +302,7 @@ public class Adjudicator {
         List<Order> beginningConvoys = new ArrayList<>();
         for (Order order : orders) {
             if (order.equals(moveOrder)) continue;  // Technically unnecessary
-            if (order.parentUnit.getUnitType() == 1) continue;  // You can't convoy over an army
+            if (order.parentUnit.getUnitType() == 0) continue;  // You can't convoy over an army
             if (order.orderType != OrderType.CONVOY) continue;
             if (order.pr1.equals(moveOrder.parentUnit.getPosition()) && order.pr2.equals(moveOrder.pr1) && order.parentUnit.getPosition().isAdjacentTo(moveOrder.parentUnit.getPosition())) {
                 beginningConvoys.add(order);
@@ -214,7 +310,7 @@ public class Adjudicator {
         }
 
         if (beginningConvoys.size() == 0)
-            return beginningConvoys;
+            return beginningConvoys;  // empty list
 
         Order firstConvoy = beginningConvoys.get(0);
         List<Order> initPath = new ArrayList<>();
