@@ -1,6 +1,5 @@
 package dip;
 
-import java.nio.file.Paths;
 import java.util.*;
 import java.io.File;
 import java.io.IOException;
@@ -75,7 +74,6 @@ public class Adjudicator {
         }
     }
 
-    Map<Order, Integer> strengthMap = new HashMap<>();
     Map<Order, Integer> supportCounts = new HashMap<>();
 
     Map<Order, Order> supportMap = new HashMap<>();
@@ -90,6 +88,9 @@ public class Adjudicator {
 
     Map<Province, List<Order>> battleList = new HashMap<>();
 
+    /**
+     * The resolve function - all the Diplomacy adjudication logic is in here.
+     */
     void resolve() {
 
         List<Order> orders = new ArrayList<>(ordersList);
@@ -165,7 +166,6 @@ public class Adjudicator {
             }
         }
 
-        List<Order> supportsToCut = new ArrayList<>();
         List<Order> contestedOrdersNoConvoys = new ArrayList<>(contestedOrders);
         contestedOrdersNoConvoys.removeAll(convoyingArmies);
 
@@ -229,14 +229,16 @@ public class Adjudicator {
                     if (attackedUnit == null) continue;
                     if (attackedUnit.orderType != OrderType.MOVE) continue;
                     if (attackedUnit.bounce) continue;
-                    if (!attackedUnit.pr1.equals(moveOrder.parentUnit.getPosition())) continue;
+                    if (attackedUnit.pr1 != moveOrder.parentUnit.getPosition()) continue;
                     if (moveOrder.parentUnit.getParentNation() == attackedUnit.parentUnit.getParentNation()
                             || supportCounts.get(moveOrder) - moveOrder.noHelpList.size() <= supportCounts.get(attackedUnit)) {
+                        System.out.println("No-swap Type A bounce() called for " + moveOrder.parentUnit);
                         bounce(moveOrder);
                         anyUnitBounced = true;
                     }
                     if (moveOrder.parentUnit.getParentNation() == attackedUnit.parentUnit.getParentNation()
                             || supportCounts.get(attackedUnit) - attackedUnit.noHelpList.size() <= supportCounts.get(moveOrder)) {
+                        System.out.println("No-swap Type B bounce() called for " + moveOrder.parentUnit);
                         bounce(attackedUnit);
                         anyUnitBounced = true;
                     }
@@ -247,14 +249,16 @@ public class Adjudicator {
             for (Province province : Province.values()) {
                 for (Order battler : battleList.get(province)) {
                     int battlerSupportCount = supportCounts.get(battler);
-                    boolean strongestBattler = true;
+                    boolean isStrongest = true;
                     for (Order battler2 : battleList.get(province)) {
-                        if (battlerSupportCount < supportCounts.get(battler2)) {
-                            strongestBattler = false;
+                        if (battler.equals(battler2)) continue;
+                        if (supportCounts.get(battler2) >= battlerSupportCount) {
+                            isStrongest = false;
                             break;
                         }
                     }
-                    if (!strongestBattler && !battler.bounce && battler.orderType == OrderType.MOVE) {
+                    if (!isStrongest && battler.orderType == OrderType.MOVE && !battler.bounce) {
+                        System.out.println("Understrength attackers bounce() called for " + battler.parentUnit);
                         bounce(battler);
                         anyUnitBouncedOuter = true;
                     }
@@ -282,6 +286,7 @@ public class Adjudicator {
                 if (victim == null) continue;
                 if (victim.orderType == OrderType.MOVE && !victim.bounce) continue;
                 if (victim.parentUnit.getParentNation() == strongestBattler.parentUnit.getParentNation()) {
+                    System.out.println("No self-dislodge Type A bounce() called for " + strongestBattler.parentUnit);
                     bounce(strongestBattler);
                     anyUnitBouncedOuter = true;
                     continue;
@@ -290,6 +295,7 @@ public class Adjudicator {
                 for (Order battler : battleList.get(province)) {
                     if (battler.equals(strongestBattler)) continue;
                     if (supportCounts.get(battler) >= strongestBattlerSupportCount) {
+                        System.out.println("No self-dislodge Type B bounce() called for " + strongestBattler.parentUnit);
                         bounce(strongestBattler);
                         anyUnitBouncedOuter = true;
                         break;
@@ -313,8 +319,10 @@ public class Adjudicator {
         }
 
         // Move units that did not bounce
-        for (Order moveOrder : contestedOrders) {
+        List<Order> changedOrders = new ArrayList<>(orders);
+        for (Order moveOrder : orders) {
             if (moveOrder.orderType != OrderType.MOVE) continue;
+            if (moveOrder.bounce) continue;
             Order victim = findUnitAtPosition(moveOrder.pr1, contestedOrders);
             if (victim != null) {
                 if (victim.orderType != OrderType.MOVE || victim.bounce) {
@@ -333,11 +341,11 @@ public class Adjudicator {
             }
             unbounce(moveOrder.parentUnit.getPosition());
             moveOrder.parentUnit.setPosition(moveOrder.pr1);  // The move itself!
-            orders.remove(moveOrder);  // This should work b/c of the .equals() override in dip.Order
-            orders.add(moveOrder);
+            changedOrders.remove(moveOrder);  // This should work b/c of the .equals() override in dip.Order
+            changedOrders.add(moveOrder);
         }
 
-        ordersList = orders;
+        ordersList = changedOrders;
 
         printUnits(ordersList, "FINAL STATE: ");
         System.out.println();
@@ -370,11 +378,11 @@ public class Adjudicator {
     }
 
     private void bounce(Order moveOrder) {
-        supportCounts.remove(moveOrder);
+        //supportCounts.remove(moveOrder);
         moveOrder.bounce = true;
         List<Order> battlers = battleList.get(moveOrder.parentUnit.getPosition());
         moveOrder.noHelpList = new ArrayList<>();
-        supportCounts.put(moveOrder, 0);
+        //supportCounts.put(moveOrder, 0);
         battlers.add(moveOrder);
         battleList.put(moveOrder.parentUnit.getPosition(), battlers);
     }
@@ -443,17 +451,17 @@ public class Adjudicator {
         Map<Province, List<Order>> battleList = new HashMap<>();
 
         for (Province province : Province.values()) {
+            List<Order> combatants = new ArrayList<>();
             for (Order order : orders) {
-                List<Order> combatants = new ArrayList<>();
                 if (order.orderType == OrderType.MOVE) {
-                    if (order.pr1.equals(province))
+                    if (order.pr1 == province)
                         combatants.add(order);
                 } else {
-                    if (order.parentUnit.getPosition().equals(province))
+                    if (order.parentUnit.getPosition() == province)
                         combatants.add(order);
                 }
-                battleList.put(province, combatants);
             }
+            battleList.put(province, combatants);
         }
         return battleList;
 
@@ -628,7 +636,7 @@ public class Adjudicator {
                 if (order.equals(order2)) continue;
                 // Two holds cannot contest each other, in any respect
                 if (order.orderType != OrderType.MOVE && order2.orderType != OrderType.MOVE) continue;
-                if (order.orderType == OrderType.MOVE && (order.pr1.equals(order2.parentUnit.getPosition())) || order.pr1.equals(order2.pr1)) {
+                if ((order.orderType == OrderType.MOVE && (order.pr1 == order2.parentUnit.getPosition()) || order.pr1 == order2.pr1)) {
                     if (!contestedOrders.contains(order))
                         contestedOrders.add(order);
                     if (!contestedOrders.contains(order2))

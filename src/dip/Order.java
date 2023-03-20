@@ -34,7 +34,7 @@ public class Order {
     public static Order parseUnit(String lingo) {
 
         String[] lingoArray = lingo.split(" ");
-        if (lingoArray.length < 5 || lingoArray.length > 7) {
+        if (lingoArray.length < 4 || lingoArray.length > 7) {
             return null;  // TODO: Handle null case
         }
 
@@ -48,7 +48,7 @@ public class Order {
 
         Unit unit = new Unit(Nation.valueOf(unitNationString), Province.valueOf(unitPositionString), unitTypeInt);
         String orderTypeString = lingoArray[3];
-        OrderType orderType = OrderType.VOID;  // TODO: Handle null case
+        OrderType orderType = OrderType.VOID;  // TODO: Handle "null" case
 
         Province province1 = Province.Swi;
         Province province2 = Province.Swi;
@@ -118,6 +118,8 @@ public class Order {
                 output += "-> " + pr2.name();
         } else if (orderType == OrderType.CONVOY) {
             output += " C " + pr1.name() + " -> " + pr2.name();
+        } else if (orderType == OrderType.VOID) {
+            output += " VOID";
         } else {
             output += " NMR";
         }
