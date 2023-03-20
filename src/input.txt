@@ -1,0 +1,9 @@
+ENGLAND F Bel S Ruh - Hol
+FRANCE A Ruh - Hol
+GERMANY A Hol S Ruh - Bel
+ITALY F ION - Tun
+ENGLAND A Lon - Den
+ENGLAND F NTH C Lon - Den
+RUSSIA F Nwy - NTH
+RUSSIA F NWG S Nwy - NTH
+=DONE=

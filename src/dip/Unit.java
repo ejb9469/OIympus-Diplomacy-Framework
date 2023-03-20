@@ -42,6 +42,10 @@ public class Unit {
         return position;
     }
 
+    public void setPosition(Province position) {
+        this.position = position;
+    }
+
     public Order getActingOrder() {
         return actingOrder;
     }
@@ -71,6 +75,14 @@ public class Unit {
             output += "F ";
         output += position.name();
         return output;
+    }
+
+    public boolean equals(Object unit) {
+        if (!(unit instanceof Unit)) {
+            return super.equals(unit);
+        } else {
+            return (this.toString().equals(unit.toString()));
+        }
     }
 
 }

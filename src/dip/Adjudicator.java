@@ -1,6 +1,9 @@
 package dip;
 
+import java.nio.file.Paths;
 import java.util.*;
+import java.io.File;
+import java.io.IOException;
 
 public class Adjudicator {
 
@@ -15,17 +18,61 @@ public class Adjudicator {
         ordersList = orders;
     }
 
-    public static void main(String[] args) {
+    private static final int INPUT_MODE = 2;
+
+    private static int tabsCounter = 0;
+
+    public static void main(String[] args) throws IOException {
+
         List<Order> orders = new ArrayList<>();
-        orders.add(new Order(new Unit(Nation.ENGLAND, Province.Bel, 1), OrderType.SUPPORT, Province.Ruh, Province.Hol));
-        orders.add(new Order(new Unit(Nation.FRANCE, Province.Ruh, 0), OrderType.MOVE, Province.Hol, Province.Hol));
-        orders.add(new Order(new Unit(Nation.GERMANY, Province.Hol, 0), OrderType.SUPPORT, Province.Ruh, Province.Bel));
-        orders.add(new Order(new Unit(Nation.ITALY, Province.ION, 1), OrderType.MOVE, Province.Tun, Province.Tun));
-        orders.add(new Order(new Unit(Nation.ENGLAND, Province.Lon, 0), OrderType.MOVE, Province.Den, Province.Den));
-        orders.add(new Order(new Unit(Nation.ENGLAND, Province.NTH, 1), OrderType.CONVOY, Province.Lon, Province.Den));
-        orders.add(new Order(new Unit(Nation.RUSSIA, Province.Nwy, 1), OrderType.MOVE, Province.NTH, Province.NTH));
-        orders.add(new Order(new Unit(Nation.RUSSIA, Province.NWG, 1), OrderType.SUPPORT, Province.Nwy, Province.NTH));
-        new Adjudicator(orders).resolve();
+
+        if (INPUT_MODE == 0) {
+            orders.add(new Order(new Unit(Nation.ENGLAND, Province.Bel, 1), OrderType.SUPPORT, Province.Ruh, Province.Hol));
+            orders.add(new Order(new Unit(Nation.FRANCE, Province.Ruh, 0), OrderType.MOVE, Province.Hol, Province.Hol));
+            orders.add(new Order(new Unit(Nation.GERMANY, Province.Hol, 0), OrderType.SUPPORT, Province.Ruh, Province.Bel));
+            orders.add(new Order(new Unit(Nation.ITALY, Province.ION, 1), OrderType.MOVE, Province.Tun, Province.Tun));
+            orders.add(new Order(new Unit(Nation.ENGLAND, Province.Lon, 0), OrderType.MOVE, Province.Den, Province.Den));
+            orders.add(new Order(new Unit(Nation.ENGLAND, Province.NTH, 1), OrderType.CONVOY, Province.Lon, Province.Den));
+            orders.add(new Order(new Unit(Nation.RUSSIA, Province.Nwy, 1), OrderType.MOVE, Province.NTH, Province.NTH));
+            orders.add(new Order(new Unit(Nation.RUSSIA, Province.NWG, 1), OrderType.SUPPORT, Province.Nwy, Province.NTH));
+            for (Order order : orders)
+                System.out.println(order.toString());
+            new Adjudicator(orders).resolve();
+        } else if (INPUT_MODE == 1) {
+            System.out.println("Enter an orders list delimited by newlines. Type the String \"=DONE=\" on a newline when finished.");
+            Scanner sc = new Scanner(System.in);
+            while (true) {
+                String in = sc.nextLine();  // Override :: Replace this line w/ Scanner nextLine()
+                if (in.equals("=DONE="))
+                    break;
+                Order order = Order.parseUnit(in);
+                orders.add(order);
+                //System.out.println(order.toString());
+            }
+            sc.close();
+            new Adjudicator(orders).resolve();
+        } else if (INPUT_MODE == 2) {  // Test cases
+            File testCaseFolder = new File("src/dip/testcases");
+            File[] testCaseFiles = testCaseFolder.listFiles();
+            //if (testCaseFiles == null) return;
+            Scanner sc;
+            for (File testCaseFile : testCaseFiles) {
+                tabsCounter = 0;
+                System.out.println(testCaseFile.getName() + "\n");
+                orders = new ArrayList<>();
+                sc = new Scanner(testCaseFile);
+                tabsCounter = 1;
+                while (sc.hasNextLine()) {
+                    String orderText = sc.nextLine();
+                    if (orderText.isBlank()) continue;
+                    Order order = Order.parseUnit(orderText);
+                    orders.add(order);
+                    //System.out.println(order.toString());
+                }
+                sc.close();
+                new Adjudicator(orders).resolve();
+            }
+        }
     }
 
     Map<Order, Integer> strengthMap = new HashMap<>();
@@ -64,9 +111,9 @@ public class Adjudicator {
         correspondingSupports = findCorrespondingSupports(orders, contestedOrders);
 
         printOrders(orders, "ALL ORDERS:");
-        printOrders(contestedOrders, "CONTESTED ORDERS:");
-        printOrders(correspondingSupports, "CORRESPONDING SUPPORTS:");
-        System.out.println("======\n");
+        //printOrders(contestedOrders, "CONTESTED ORDERS:");
+        //printOrders(correspondingSupports, "CORRESPONDING SUPPORTS:");
+        //System.out.println("======\n");
 
         List<Order> invalidSupports = new ArrayList<>();
         for (Order order : orders) {
@@ -168,60 +215,190 @@ public class Adjudicator {
 
         }
 
-        System.out.println("\nDONE!!");
+        boolean anyUnitBouncedOuter = true;
+        while (anyUnitBouncedOuter) {
+            anyUnitBouncedOuter = false;
 
-        ////
+            // Mark bounces caused by the inability to swap places
+            boolean anyUnitBounced = true;
+            while (anyUnitBounced) {
+                anyUnitBounced = false;
+                for (Order moveOrder : contestedOrdersNoConvoys) {
+                    if (moveOrder.orderType != OrderType.MOVE) continue;
+                    Order attackedUnit = findUnitAtPosition(moveOrder.pr1, contestedOrdersNoConvoys);
+                    if (attackedUnit == null) continue;
+                    if (attackedUnit.orderType != OrderType.MOVE) continue;
+                    if (attackedUnit.bounce) continue;
+                    if (!attackedUnit.pr1.equals(moveOrder.parentUnit.getPosition())) continue;
+                    if (moveOrder.parentUnit.getParentNation() == attackedUnit.parentUnit.getParentNation()
+                            || supportCounts.get(moveOrder) - moveOrder.noHelpList.size() <= supportCounts.get(attackedUnit)) {
+                        bounce(moveOrder);
+                        anyUnitBounced = true;
+                    }
+                    if (moveOrder.parentUnit.getParentNation() == attackedUnit.parentUnit.getParentNation()
+                            || supportCounts.get(attackedUnit) - attackedUnit.noHelpList.size() <= supportCounts.get(moveOrder)) {
+                        bounce(attackedUnit);
+                        anyUnitBounced = true;
+                    }
+                }
+            }
 
-        /*for (Order contestedOrder : contestedOrdersNoConvoys) {
-            if (contestedOrder.orderType == OrderType.SUPPORT) {
-                List<Order> attackers = findAttackers(contestedOrders, contestedOrder);
-                boolean cut = false;
-                for (Order attacker : attackers) {
-                    if (!attacker.pr1.equals(contestedOrder.pr2)) {  // Support cannot be cut by unit being attacked by supportee
-                        cut = true;
+            // Mark bounces suffered by understrength attackers
+            for (Province province : Province.values()) {
+                for (Order battler : battleList.get(province)) {
+                    int battlerSupportCount = supportCounts.get(battler);
+                    boolean strongestBattler = true;
+                    for (Order battler2 : battleList.get(province)) {
+                        if (battlerSupportCount < supportCounts.get(battler2)) {
+                            strongestBattler = false;
+                            break;
+                        }
+                    }
+                    if (!strongestBattler && !battler.bounce && battler.orderType == OrderType.MOVE) {
+                        bounce(battler);
+                        anyUnitBouncedOuter = true;
+                    }
+                }
+            }
+
+            if (anyUnitBouncedOuter) continue;
+
+            // Mark bounces caused by inability to self-dislodge
+            for (Province province : Province.values()) {
+                int strongestBattlerSupportCount = 0;
+                Order strongestBattler = null;
+                for (Order battler : battleList.get(province)) {
+                    if (supportCounts.get(battler) > strongestBattlerSupportCount) {
+                        strongestBattlerSupportCount = supportCounts.get(battler);
+                        strongestBattler = battler;
+                    } else if (supportCounts.get(battler) == strongestBattlerSupportCount) {
+                        strongestBattler = null;
+                    }
+                }
+                if (strongestBattler == null) continue;
+                if (strongestBattler.bounce || strongestBattler.orderType != OrderType.MOVE) continue;
+
+                Order victim = findUnitAtPosition(province, contestedOrders);
+                if (victim == null) continue;
+                if (victim.orderType == OrderType.MOVE && !victim.bounce) continue;
+                if (victim.parentUnit.getParentNation() == strongestBattler.parentUnit.getParentNation()) {
+                    bounce(strongestBattler);
+                    anyUnitBouncedOuter = true;
+                    continue;
+                }
+                supportCounts.replace(victim, supportCounts.get(victim) - victim.noHelpList.size());
+                for (Order battler : battleList.get(province)) {
+                    if (battler.equals(strongestBattler)) continue;
+                    if (supportCounts.get(battler) >= strongestBattlerSupportCount) {
+                        bounce(strongestBattler);
+                        anyUnitBouncedOuter = true;
                         break;
                     }
                 }
-                if (cut) {
-                    orders.remove(contestedOrder);
-                    supportsToCut.add(contestedOrder);
-                }
-                // Note: We cannot be sure the support order succeeds if it simply isn't cut: it can still be cut if dislodged under *all* conditions
             }
-        }
-        contestedOrders.removeAll(supportsToCut);
-        supportsToCut = cutSupports(supportsToCut);
-        orders.addAll(supportsToCut);
-        contestedOrders.addAll(supportsToCut);
 
-        // All uncontested AKA untouched units automatically resolve to `SUCCEEDS`
-        for (Order order : orders) {
-            if (!contestedOrders.contains(order))
-                orderResolutions.put(order, OrderResolution.SUCCEEDS);
-            else
-                orderResolutions.put(order, OrderResolution.UNRESOLVED);
+            if (anyUnitBouncedOuter) continue;
+
+            // Mark supports cut by dislodgements
+            for (Order moveOrder : contestedOrders) {
+                if (moveOrder.orderType != OrderType.MOVE) continue;
+                if (!moveOrder.bounce) {
+                    if (cutSupport(moveOrder))
+                        anyUnitBouncedOuter = true;  // Misnomer but functionally the same
+                }
+            }
+
+            if (anyUnitBouncedOuter) continue;
+
         }
 
-        /////
-        //strengthMap = calculateStrengths(contestedOrders, orderResolutions);
-        */
+        // Move units that did not bounce
+        for (Order moveOrder : contestedOrders) {
+            if (moveOrder.orderType != OrderType.MOVE) continue;
+            Order victim = findUnitAtPosition(moveOrder.pr1, contestedOrders);
+            if (victim != null) {
+                if (victim.orderType != OrderType.MOVE || victim.bounce) {
+                    if (contestedOrdersNoConvoys.contains(victim)
+                            && victim.orderType == OrderType.MOVE
+                            && victim.pr1 == moveOrder.parentUnit.getPosition()
+                            && contestedOrdersNoConvoys.contains(moveOrder))
+                    {
+                        List<Order> battlersAtSource = battleList.get(victim.pr1);
+                        battlersAtSource.remove(victim);
+                        battleList.replace(victim.pr1, battlersAtSource);
+                    }
+                    victim.dislodged = true;
+                    // TODO: Populate retreats list
+                }
+            }
+            unbounce(moveOrder.parentUnit.getPosition());
+            moveOrder.parentUnit.setPosition(moveOrder.pr1);  // The move itself!
+            orders.remove(moveOrder);  // This should work b/c of the .equals() override in dip.Order
+            orders.add(moveOrder);
+        }
+
+        ordersList = orders;
+
+        printUnits(ordersList, "FINAL STATE: ");
+        System.out.println();
 
     }
 
-    private void cutSupport(Order moveOrder) {
+    private void unbounce(Province province) {
+        int strongestBattlerSupportCount = 0;
+        Order strongestBattler = null;
+        for (Order battler : battleList.get(province)) {
+            if (supportCounts.get(battler) > strongestBattlerSupportCount) {
+                strongestBattlerSupportCount = supportCounts.get(battler);
+                strongestBattler = battler;
+            } else if (supportCounts.get(battler) == strongestBattlerSupportCount) {
+                strongestBattler = null;
+            }
+        }
+        if (strongestBattler != null) {
+            if (!strongestBattler.bounce) return;
+            strongestBattler.bounce = false;
+            if (strongestBattler.dislodged) {
+                strongestBattler.dislodged = false;
+            } else {
+                List<Order> battlersAtSource = battleList.get(strongestBattler.prInitial);
+                battlersAtSource.remove(strongestBattler);
+                battleList.replace(province, battlersAtSource);
+                unbounce(strongestBattler.prInitial);
+            }
+        }
+    }
+
+    private void bounce(Order moveOrder) {
+        supportCounts.remove(moveOrder);
+        moveOrder.bounce = true;
+        List<Order> battlers = battleList.get(moveOrder.parentUnit.getPosition());
+        moveOrder.noHelpList = new ArrayList<>();
+        supportCounts.put(moveOrder, 0);
+        battlers.add(moveOrder);
+        battleList.put(moveOrder.parentUnit.getPosition(), battlers);
+    }
+
+    /**
+     * Cut support procedure
+     * @param moveOrder
+     * @return Whether *any* support was cut
+     */
+    private boolean cutSupport(Order moveOrder) {
         Order defender = findUnitAtPosition(moveOrder.pr1, contestedOrders);
-        if (defender == null) return;
-        if (defender.orderType != OrderType.SUPPORT) return;
-        if (defender.cut) return;
-        if (moveOrder.parentUnit.getParentNation() == defender.parentUnit.getParentNation()) return;
+        if (defender == null) return false;
+        if (defender.orderType != OrderType.SUPPORT) return false;
+        if (defender.cut) return false;
+        if (moveOrder.parentUnit.getParentNation() == defender.parentUnit.getParentNation()) return false;
         if (convoyingArmies.contains(moveOrder)) {
             System.out.println("Adjudicator.cutSupport() is handling a convoying army...");  // Debug
         }
         defender.cut = true;
         Order supported = supportMap.get(defender);
-        if (supported == null) return;
+        if (supported == null) return false;
         supportCounts.replace(supported, supportCounts.get(supported) - 1);
         supported.noHelpList.remove(defender);
+        return true;
     }
 
     private void checkDisruptions(Order convoyingArmy) {
@@ -275,8 +452,7 @@ public class Adjudicator {
                     if (order.parentUnit.getPosition().equals(province))
                         combatants.add(order);
                 }
-                if (combatants.size() > 0)
-                    battleList.put(province, combatants);
+                battleList.put(province, combatants);
             }
         }
         return battleList;
@@ -469,16 +645,29 @@ public class Adjudicator {
 
     }
 
+    private static void printUnits(Collection<Order> orders, String preamble) {
+        if (!preamble.isBlank())
+            System.out.println("\t".repeat(tabsCounter) + preamble);
+        for (Order order : orders) {
+            String unitText = "\t".repeat(tabsCounter) + order.parentUnit.toString();
+            if (order.dislodged)
+                unitText += " :: DISLODGED";
+            System.out.println(unitText);
+        }
+        System.out.println();
+    }
+
     private static void printOrders(Collection<Order> orders, String preamble) {
 
         if (!preamble.isBlank())
-            System.out.println(preamble + "\n");
+            System.out.println("\t".repeat(tabsCounter) + preamble);
 
         for (Order order : orders) {
-            System.out.println(order);
+            String orderText = "\t".repeat(tabsCounter) + order.toString();
+            System.out.println(orderText);
         }
 
-        System.out.println("\n");
+        System.out.println();
 
     }
 
