@@ -1,5 +1,7 @@
 package dip;
 
+import dip.exceptions.BadOrderException;
+
 import java.util.*;
 import java.io.File;
 import java.io.IOException;
@@ -21,7 +23,7 @@ public class Adjudicator {
 
     private static int tabsCounter = 0;
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, BadOrderException {
 
         List<Order> orders = new ArrayList<>();
 

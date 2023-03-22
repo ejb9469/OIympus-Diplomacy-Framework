@@ -1,5 +1,7 @@
 package dip;
 
+import dip.exceptions.BadOrderException;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,17 +34,17 @@ public class Order {
     boolean cut = false;
     List<Order> noHelpList = new ArrayList<>();  // List of Orders that this order cannot receive support from under certain circumstances, most notably same-power support
 
-    public static Order parseUnit(String lingo) {
+    public static Order parseUnit(String lingo) throws BadOrderException {
 
         String[] lingoArray = lingo.split(" ");
 
         if (lingoArray.length < 4)
-            return null;  // TODO: Handle null case
+            throw new BadOrderException();
 
         boolean viaConvoy = lingoArray[lingoArray.length-2].equals("VIA") && lingoArray[lingoArray.length-1].equals("CONVOY");
 
         if (lingoArray.length > 7 && !viaConvoy)
-            return null;  // TODO: Handle null case
+            throw new BadOrderException();
 
         // e.g. Russian A Bud S Rum - Ser
         String unitNationString = lingoArray[0];
@@ -54,10 +56,11 @@ public class Order {
 
         Unit unit = new Unit(Nation.valueOf(unitNationString), Province.valueOf(unitPositionString), unitTypeInt);
         String orderTypeString = lingoArray[3];
-        OrderType orderType = OrderType.VOID;  // TODO: Handle "null" case
 
-        Province province1 = Province.Swi;
-        Province province2 = Province.Swi;
+        OrderType orderType;
+
+        Province province1;
+        Province province2;
 
         if (orderTypeString.equals("-")) {
             orderType = OrderType.MOVE;
@@ -78,6 +81,8 @@ public class Order {
             orderType = OrderType.CONVOY;
             province1 = Province.valueOf(lingoArray[4]);
             province2 = Province.valueOf(lingoArray[6]);
+        } else {
+            throw new BadOrderException();
         }
 
         return new Order(unit, orderType, province1, province2, viaConvoy);
