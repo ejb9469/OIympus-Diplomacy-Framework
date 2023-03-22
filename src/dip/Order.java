@@ -12,6 +12,7 @@ public class Order {
     OrderType orderType;  // -1 = NMR, 0 = hold, 1 = move, 2 = support, 3 = convoy
     Province pr1;
     Province pr2;
+    boolean viaConvoy = false;
 
     Province prInitial;
 
@@ -34,9 +35,14 @@ public class Order {
     public static Order parseUnit(String lingo) {
 
         String[] lingoArray = lingo.split(" ");
-        if (lingoArray.length < 4 || lingoArray.length > 7) {
+
+        if (lingoArray.length < 4)
             return null;  // TODO: Handle null case
-        }
+
+        boolean viaConvoy = lingoArray[lingoArray.length-2].equals("VIA") && lingoArray[lingoArray.length-1].equals("CONVOY");
+
+        if (lingoArray.length > 7 && !viaConvoy)
+            return null;  // TODO: Handle null case
 
         // e.g. Russian A Bud S Rum - Ser
         String unitNationString = lingoArray[0];
@@ -74,7 +80,7 @@ public class Order {
             province2 = Province.valueOf(lingoArray[6]);
         }
 
-        return new Order(unit, orderType, province1, province2);
+        return new Order(unit, orderType, province1, province2, viaConvoy);
 
     }
 
@@ -84,6 +90,11 @@ public class Order {
 
     private boolean testValidity() {
         return true;  // TODO - .borders(), etc.
+    }
+
+    public Order(Unit parentUnit, OrderType orderType, Province provinceSlot1, Province provinceSlot2, boolean viaConvoy) {
+        this(parentUnit, orderType, provinceSlot1, provinceSlot2);
+        this.viaConvoy = viaConvoy;
     }
 
     public Order(Unit parentUnit, OrderType orderType, Province provinceSlot1, Province provinceSlot2) {
@@ -98,8 +109,8 @@ public class Order {
     public Order(Unit parentUnit) {  // NMR
         this.parentUnit = parentUnit;
         this.orderType = OrderType.NONE;
-        this.pr1 = null;  // Keep these null assignments in mind
-        this.pr2 = null;
+        this.pr1 = parentUnit.getPosition();
+        this.pr2 = parentUnit.getPosition();
         this.dislodged = false;
         setPrInitial();
     }

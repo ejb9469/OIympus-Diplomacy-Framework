@@ -1,0 +1,39 @@
+AUSTRIA A Bud - Ser
+AUSTRIA F Gre S ION - AEG
+AUSTRIA A Ser - Bul
+AUSTRIA A Tri - Tyr
+AUSTRIA A Vie - Bud
+
+ENGLAND F Bel S Edi - NTH
+ENGLAND F Edi - NTH
+ENGLAND F Lon S Edi - NTH
+ENGLAND F NWG C Nwy - Cly
+ENGLAND A Nwy - Cly
+
+FRANCE A Bur S Bel H
+FRANCE F Mar - Spa
+FRANCE A Par S Bur H
+FRANCE F Por - MAO
+FRANCE A Spa - Gas
+
+GERMANY A Hol S Ruh - Bel
+GERMANY A Mun - Bur
+GERMANY F NTH - NWG
+GERMANY A Ruh - Bel
+
+ITALY F ION - AEG
+ITALY F Nap - ION
+ITALY A Tun H
+ITALY A Ven H
+
+RUSSIA A Fin S Swe - Nwy
+RUSSIA A Mos - Stp
+RUSSIA A Rum S Ser - Bul
+RUSSIA F Sev - BLA
+RUSSIA F Stp - BAR
+RUSSIA F Swe - Nwy
+
+TURKEY F Ank - BLA
+TURKEY A Arm - Sev
+TURKEY A Bul - Rum
+TURKEY F Con S Ank - BLA

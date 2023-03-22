@@ -1,0 +1,40 @@
+AUSTRIA A Gal - Ukr
+AUSTRIA F Gre H
+AUSTRIA A Rum S Gal - Ukr
+AUSTRIA A Ser S Rum H
+AUSTRIA A Tri S Tyr - Ven
+AUSTRIA A Tyr - Ven
+
+ENGLAND F Lon - Wal
+ENGLAND F Lvp S Lon - Wal
+ENGLAND F NAO - IRI
+
+FRANCE A Bur - Mar
+FRANCE F ENG C Wal - Lon
+FRANCE F IRI - Lvp
+FRANCE A Mar - Pie
+FRANCE A Wal - Lon VIA CONVOY
+
+GERMANY A Bel - Ruh
+GERMANY A Hol - Edi
+GERMANY F Kie - Den
+GERMANY A Mun S Bel - Ruh
+GERMANY F NTH C Hol - Edi
+GERMANY A Sil - War
+GERMANY F Swe - Nwy
+
+ITALY A Apu S Ven H
+ITALY F Nap S Tun - ION
+ITALY F Tun - ION
+ITALY A Ven H
+
+RUSSIA A Arm - Smy
+RUSSIA F Nwy H
+RUSSIA A Sev S Ukr - Rum
+RUSSIA A Stp S Nwy H
+RUSSIA A Ukr - Rum
+
+TURKEY A Ank - Con
+TURKEY F Bul - BLA
+TURKEY F ION - Apu
+TURKEY F Smy - Con

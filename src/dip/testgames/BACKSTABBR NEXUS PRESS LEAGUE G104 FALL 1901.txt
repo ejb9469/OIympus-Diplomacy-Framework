@@ -1,0 +1,28 @@
+AUSTRIA F Alb - Gre
+AUSTRIA A Ser S Ukr - Rum
+AUSTRIA A Tri - Bud
+
+ENGLAND A Edi - Nwy
+ENGLAND F NTH - Bel
+ENGLAND F NWG C Edi - Nwy
+
+FRANCE F MAO - Por
+FRANCE A Mar - Spa
+FRANCE A Pic - Bur
+
+GERMANY F Den - NTH
+GERMANY A Kie - Hol
+GERMANY A Mun - Ruh
+
+ITALY A Apu - Tun
+ITALY F ION C Apu - Tun
+ITALY A Ven H
+
+RUSSIA F BOT - Swe
+RUSSIA F Sev - BLA
+RUSSIA A Stp - Fin
+RUSSIA A Ukr - Rum
+
+TURKEY F Ank - BLA
+TURKEY A Arm - Sev
+TURKEY A Bul - Rum

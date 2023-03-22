@@ -120,19 +120,19 @@ public class Adjudicator {
         for (Order order : orders) {
             if (order.orderType == OrderType.SUPPORT) {
                 List<Order> orders2 = orders;
-                if (!order.pr1.isAdjacentTo(order.pr2))  // The only reason e.g. Bel S Lon - Hol would work is if e.g. NTH C Lon - Hol
+                if (!order.pr1.isAdjacentTo(order.pr2) && order.pr1 != order.pr2)  // The only reason e.g. Bel S Lon - Hol would work is if e.g. NTH C Lon - Hol
                     orders2 = convoyingArmies;
                 boolean found = false;
                 for (Order order2 : orders2) {
                     if (order.equals(order2)) continue;
-                    if (order.pr1.equals(order2.parentUnit.getPosition())) {
+                    if (order.pr1 == order2.parentUnit.getPosition()) {
                         found = true;
                         supportMap.put(order, order2);
                         if (order2.orderType == OrderType.MOVE) {  // Support-to-hold on a MOVE order
-                            if (order.pr1.equals(order.pr2))
+                            if (order.pr1 == order.pr2)
                                 invalidSupports.add(order);
                         } else {
-                            if (!order.pr1.equals(order.pr2))  // Support-to-move on a stationary order
+                            if (order.pr1 != order.pr2)  // Support-to-move on a stationary order
                                 invalidSupports.add(order);
                         }
                         break;
@@ -232,13 +232,13 @@ public class Adjudicator {
                     if (attackedUnit.pr1 != moveOrder.parentUnit.getPosition()) continue;
                     if (moveOrder.parentUnit.getParentNation() == attackedUnit.parentUnit.getParentNation()
                             || supportCounts.get(moveOrder) - moveOrder.noHelpList.size() <= supportCounts.get(attackedUnit)) {
-                        System.out.println("No-swap Type A bounce() called for " + moveOrder.parentUnit);
+                        //System.out.println("No-swap Type A bounce() called for " + moveOrder.parentUnit);
                         bounce(moveOrder);
                         anyUnitBounced = true;
                     }
                     if (moveOrder.parentUnit.getParentNation() == attackedUnit.parentUnit.getParentNation()
                             || supportCounts.get(attackedUnit) - attackedUnit.noHelpList.size() <= supportCounts.get(moveOrder)) {
-                        System.out.println("No-swap Type B bounce() called for " + moveOrder.parentUnit);
+                        //System.out.println("No-swap Type B bounce() called for " + moveOrder.parentUnit);
                         bounce(attackedUnit);
                         anyUnitBounced = true;
                     }
@@ -258,7 +258,7 @@ public class Adjudicator {
                         }
                     }
                     if (!isStrongest && battler.orderType == OrderType.MOVE && !battler.bounce) {
-                        System.out.println("Understrength attackers bounce() called for " + battler.parentUnit);
+                        //System.out.println("Understrength attackers bounce() called for " + battler.parentUnit);
                         bounce(battler);
                         anyUnitBouncedOuter = true;
                     }
@@ -286,7 +286,7 @@ public class Adjudicator {
                 if (victim == null) continue;
                 if (victim.orderType == OrderType.MOVE && !victim.bounce) continue;
                 if (victim.parentUnit.getParentNation() == strongestBattler.parentUnit.getParentNation()) {
-                    System.out.println("No self-dislodge Type A bounce() called for " + strongestBattler.parentUnit);
+                    //System.out.println("No self-dislodge Type A bounce() called for " + strongestBattler.parentUnit);
                     bounce(strongestBattler);
                     anyUnitBouncedOuter = true;
                     continue;
@@ -295,7 +295,7 @@ public class Adjudicator {
                 for (Order battler : battleList.get(province)) {
                     if (battler.equals(strongestBattler)) continue;
                     if (supportCounts.get(battler) >= strongestBattlerSupportCount) {
-                        System.out.println("No self-dislodge Type B bounce() called for " + strongestBattler.parentUnit);
+                        //System.out.println("No self-dislodge Type B bounce() called for " + strongestBattler.parentUnit);
                         bounce(strongestBattler);
                         anyUnitBouncedOuter = true;
                         break;
@@ -335,13 +335,15 @@ public class Adjudicator {
                         battlersAtSource.remove(victim);
                         battleList.replace(victim.pr1, battlersAtSource);
                     }
+                    changedOrders.remove(victim);
                     victim.dislodged = true;
+                    changedOrders.add(victim);
                     // TODO: Populate retreats list
                 }
             }
             unbounce(moveOrder.parentUnit.getPosition());
-            moveOrder.parentUnit.setPosition(moveOrder.pr1);  // The move itself!
             changedOrders.remove(moveOrder);  // This should work b/c of the .equals() override in dip.Order
+            moveOrder.parentUnit.setPosition(moveOrder.pr1);  // The move itself!
             changedOrders.add(moveOrder);
         }
 
@@ -378,11 +380,11 @@ public class Adjudicator {
     }
 
     private void bounce(Order moveOrder) {
-        //supportCounts.remove(moveOrder);
+        supportCounts.remove(moveOrder);
         moveOrder.bounce = true;
         List<Order> battlers = battleList.get(moveOrder.parentUnit.getPosition());
         moveOrder.noHelpList = new ArrayList<>();
-        //supportCounts.put(moveOrder, 0);
+        supportCounts.put(moveOrder, 0);
         battlers.add(moveOrder);
         battleList.put(moveOrder.parentUnit.getPosition(), battlers);
     }
@@ -398,12 +400,13 @@ public class Adjudicator {
         if (defender.orderType != OrderType.SUPPORT) return false;
         if (defender.cut) return false;
         if (moveOrder.parentUnit.getParentNation() == defender.parentUnit.getParentNation()) return false;
+        if (defender.pr2 == moveOrder.parentUnit.getPosition()) return false;
         if (convoyingArmies.contains(moveOrder)) {
             System.out.println("Adjudicator.cutSupport() is handling a convoying army...");  // Debug
         }
         defender.cut = true;
         Order supported = supportMap.get(defender);
-        if (supported == null) return false;
+        if (supported == null) return false;  // Should this return false or true? Should this line even be here?
         supportCounts.replace(supported, supportCounts.get(supported) - 1);
         supported.noHelpList.remove(defender);
         return true;
@@ -473,7 +476,7 @@ public class Adjudicator {
             if (order.orderType != OrderType.MOVE) continue;
             if (!order.parentUnit.getPosition().isCoastal()) continue;  // You can't convoy from or to inland provinces
             if (!order.pr1.isCoastal()) continue;
-            if (!order.parentUnit.getPosition().isAdjacentTo(order.pr1))
+            if (!order.parentUnit.getPosition().isAdjacentTo(order.pr1) || order.viaConvoy)
                 convoyingArmies.add(order);
         }
         return convoyingArmies;
@@ -536,63 +539,6 @@ public class Adjudicator {
         return adjacentConvoys;
     }
 
-    private List<Order> findAttackers(Collection<Order> orders, Order matching) {
-
-        List<Order> attackers = new ArrayList<>();
-
-        for (Order order : orders) {
-            if (order.equals(matching)) continue;
-            if (order.orderType != OrderType.MOVE) continue;
-            if (order.pr1.equals(matching.parentUnit.getPosition()))
-                attackers.add(order);
-        }
-
-        return attackers;
-
-    }
-
-    private Map<Order, Integer> calculateStrengths(List<Order> orders, Map<Order, OrderResolution> orderResolutions) {
-
-        Map<Order, Integer> strengthsMap = new HashMap<>();
-
-        for (Order order : orders) {
-            int strength = 1;
-            List<Order> supports = findCorrespondingSupports(orderResolutions.keySet(), order);
-            for (Order support : supports) {
-                if (orderResolutions.get(support) == OrderResolution.SUCCEEDS)
-                    strength++;
-            }
-            strengthsMap.put(order, strength);
-            System.out.println("Setting strength value [" + strength + "] to Order:  [[" + order + "]]");
-        }
-
-        return strengthsMap;
-
-    }
-
-    /**
-     * Transforms support Orders in `supports` to hold Orders
-     * @param supports
-     * @return
-     */
-    private List<Order> cutSupports(List<Order> supports) {
-        List<Order> holds = new ArrayList<>();
-        for (Order support : supports) {
-            holds.add(new Order(support.parentUnit, OrderType.HOLD, support.parentUnit.getPosition(), support.parentUnit.getPosition()));
-        }
-        return holds;
-    }
-
-    private List<Order> findSuccessfulOrders(Map<Order, OrderResolution> orderResolutions) {
-        List<Order> successfulOrders = new ArrayList<>();
-        for (Order order : orderResolutions.keySet()) {
-            if (orderResolutions.get(order) == OrderResolution.SUCCEEDS) {
-                successfulOrders.add(order);
-            }
-        }
-        return successfulOrders;
-    }
-
     /**
      * @param orders Collection of orders from which to grab potential corresponding supports
      * @param matching Collection of orders for supports to correspond *to*
@@ -649,10 +595,6 @@ public class Adjudicator {
 
     }
 
-    private void adjudicate() {
-
-    }
-
     private static void printUnits(Collection<Order> orders, String preamble) {
         if (!preamble.isBlank())
             System.out.println("\t".repeat(tabsCounter) + preamble);
@@ -681,6 +623,10 @@ public class Adjudicator {
 
     private static void printOrders(Collection<Order> orders) {
         printOrders(orders, "");
+    }
+
+    private static void printUnits(Collection<Order> orders) {
+        printUnits(orders, "");
     }
 
 }

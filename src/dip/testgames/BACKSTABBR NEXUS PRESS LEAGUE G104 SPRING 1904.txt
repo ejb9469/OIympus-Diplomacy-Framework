@@ -1,0 +1,38 @@
+AUSTRIA F AEG S Bul - Con
+AUSTRIA A Bul - Con
+AUSTRIA A Gre H
+AUSTRIA A Pie S Tyr - Ven
+AUSTRIA A Tyr - Ven
+
+ENGLAND F NTH - Den
+ENGLAND F SKA S NTH - Den
+
+FRANCE A Gas S Par - Bur
+FRANCE F LYO - Mar
+FRANCE F MAO - IRI
+FRANCE A Par - Bur
+FRANCE A Pic S Par - Bur
+
+GERMANY A Bel S Bur H
+GERMANY A Bur S Bel H
+GERMANY F Den - SKA
+GERMANY F HEL - NTH
+GERMANY A Hol S Bel H
+GERMANY A Mun - Tyr
+
+ITALY F ION - ADR
+ITALY A Nap - Rom
+ITALY A Rom - Tus
+ITALY F Tun - ION
+
+RUSSIA F Edi S HEL - NTH
+RUSSIA A Fin - Swe
+RUSSIA A Mos - Sev
+RUSSIA F Nwy - SKA
+RUSSIA A Rum S Mos - Sev
+RUSSIA F Sev - BLA
+RUSSIA F Stp - BAR
+
+TURKEY A Arm - Bul
+TURKEY F BLA C Arm - Bul
+TURKEY F Con S Arm - Bul
