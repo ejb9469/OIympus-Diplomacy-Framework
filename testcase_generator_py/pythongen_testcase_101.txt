@@ -1,0 +1,8 @@
+FRANCE A Tunis - Naples
+FRANCE F Tyrrhenian Sea C Tunis - Naples
+
+ITALY F Naples S Ionian Sea H
+ITALY F Ionian Sea C Tunis - Naples
+
+TURKEY F Aegean Sea S Eastern Mediterranean - Ionian Sea
+TURKEY F Eastern Mediterranean - Ionian Sea

@@ -1,0 +1,6 @@
+ENGLAND F English Channel C London - Belgium
+ENGLAND A London - Belgium
+ENGLAND F Irish Sea C London - Belgium
+
+FRANCE F North Atlantic Ocean S Mid-Atlantic Ocean - Irish Sea
+FRANCE F Mid-Atlantic Ocean - Irish Sea

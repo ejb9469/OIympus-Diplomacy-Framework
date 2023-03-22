@@ -2,6 +2,7 @@ package dip;
 
 import dip.exceptions.BadOrderException;
 
+import java.io.FileWriter;
 import java.util.*;
 import java.io.File;
 import java.io.IOException;
@@ -20,6 +21,7 @@ public class Adjudicator {
     }
 
     private static final int INPUT_MODE = 2;
+    private static FileWriter currentFileWriter = null;
 
     private static int tabsCounter = 0;
 
@@ -55,23 +57,47 @@ public class Adjudicator {
         } else if (INPUT_MODE == 2) {  // Test cases
             File testCaseFolder = new File("src/dip/testcases");
             File[] testCaseFiles = testCaseFolder.listFiles();
-            //if (testCaseFiles == null) return;
+            if (testCaseFiles == null) throw new IOException();
+            if (testCaseFiles.length == 0) return;
+            Map<String, String> namesToAbbreviations = new HashMap<>();
+            for (Province province : Province.values()) {
+                if (province.name().contains("(") || province.name().equals("Switzerland")) continue;
+                namesToAbbreviations.put(province.getName(), province.name());
+            }
             Scanner sc;
             for (File testCaseFile : testCaseFiles) {
+                if (!testCaseFile.isFile()) continue;
+                File file = new File("src/dip/testcases/results/OUT_" + testCaseFile.getName());
+                file.createNewFile();
+                currentFileWriter = new FileWriter(file.getAbsolutePath());
                 tabsCounter = 0;
                 System.out.println(testCaseFile.getName() + "\n");
+                currentFileWriter.write(testCaseFile.getName() + "\n\n");
                 orders = new ArrayList<>();
                 sc = new Scanner(testCaseFile);
                 tabsCounter = 1;
+                boolean abbreviated = !testCaseFile.getName().startsWith("pythongen_");
+                //if (abbreviated) continue;
                 while (sc.hasNextLine()) {
                     String orderText = sc.nextLine();
                     if (orderText.isBlank()) continue;
+                    if (orderText.contains(".ec") || orderText.contains(".nc") || orderText.contains(".sc")) break;  // TODO: Ignore coasts for now
+                    if (!abbreviated) {
+                        Map<String, String> fullNamesToAbbrsMap = Province.generateFullNamesToAbbreviationsMap();
+                        for (String fullName : fullNamesToAbbrsMap.keySet()) {
+                            if (orderText.contains(fullName)) {
+                                orderText = orderText.replaceAll(fullName, fullNamesToAbbrsMap.get(fullName));
+                            }
+                        }
+                    }
                     Order order = Order.parseUnit(orderText);
                     orders.add(order);
                     //System.out.println(order.toString());
                 }
                 sc.close();
+                if (orders.size() == 0) continue;
                 new Adjudicator(orders).resolve();
+                currentFileWriter.close();
             }
         }
     }
@@ -176,7 +202,7 @@ public class Adjudicator {
             cutSupport(contestedOrder);
         }
 
-        battleList = populateBattleList(contestedOrdersNoConvoys);
+        battleList = populateBattleList(contestedOrders/*NoConvoys*/);
 
         // CONVOYING ARMIES PROCEDURE \\
         int convoyingArmiesSuccessesOuter = -1;
@@ -353,6 +379,13 @@ public class Adjudicator {
 
         printUnits(ordersList, "FINAL STATE: ");
         System.out.println();
+        if (currentFileWriter != null) {
+            try {
+                currentFileWriter.write("\n");
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        }
 
     }
 
@@ -598,15 +631,37 @@ public class Adjudicator {
     }
 
     private static void printUnits(Collection<Order> orders, String preamble) {
-        if (!preamble.isBlank())
+        if (!preamble.isBlank()) {
             System.out.println("\t".repeat(tabsCounter) + preamble);
+            if (currentFileWriter != null) {
+                try {
+                    currentFileWriter.write("\t".repeat(tabsCounter) + preamble + "\n");
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        }
         for (Order order : orders) {
             String unitText = "\t".repeat(tabsCounter) + order.parentUnit.toString();
             if (order.dislodged)
                 unitText += " :: DISLODGED";
             System.out.println(unitText);
+            if (currentFileWriter != null) {
+                try {
+                    currentFileWriter.write(unitText + "\n");
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            }
         }
         System.out.println();
+        if (currentFileWriter != null) {
+            try {
+                currentFileWriter.write("\n");
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        }
     }
 
     private static void printOrders(Collection<Order> orders, String preamble) {

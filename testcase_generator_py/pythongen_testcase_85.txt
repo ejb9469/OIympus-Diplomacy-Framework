@@ -1,0 +1,4 @@
+ENGLAND F North Sea C London - Holland
+ENGLAND A London - Holland
+
+GERMANY F Skagerrak - North Sea

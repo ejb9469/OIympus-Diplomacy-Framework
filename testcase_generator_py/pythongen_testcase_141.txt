@@ -1,0 +1,7 @@
+FRANCE A Gascony - Marseilles VIA CONVOY
+FRANCE A Burgundy S Gascony - Marseilles
+FRANCE F Mid-Atlantic Ocean C Gascony - Marseilles
+FRANCE F Western Mediterranean C Gascony - Marseilles
+FRANCE F Gulf of Lyon C Gascony - Marseilles
+
+ITALY A Marseilles H

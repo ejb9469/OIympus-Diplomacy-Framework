@@ -1,0 +1,10 @@
+RUSSIA A Edinburgh S Norway - Clyde
+RUSSIA F Norwegian Sea C Norway - Clyde
+RUSSIA A Norway - Clyde
+
+FRANCE F Irish Sea S Mid-Atlantic Ocean - North Atlantic Ocean
+FRANCE F Mid-Atlantic Ocean - North Atlantic Ocean
+
+ENGLAND A Liverpool - Clyde VIA CONVOY
+ENGLAND F North Atlantic Ocean C Liverpool - Clyde
+ENGLAND F Clyde S North Atlantic Ocean H

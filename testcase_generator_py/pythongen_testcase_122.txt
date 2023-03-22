@@ -1,0 +1,8 @@
+ENGLAND A Norway - Sweden VIA CONVOY
+ENGLAND A Denmark S Norway - Sweden
+ENGLAND F Baltic Sea S Norway - Sweden
+ENGLAND F Skagerrak C Norway - Sweden
+ENGLAND F North Sea - Norway
+
+RUSSIA A Sweden - Norway
+RUSSIA F Norwegian Sea S Sweden - Norway

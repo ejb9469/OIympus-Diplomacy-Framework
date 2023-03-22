@@ -1,0 +1,8 @@
+ENGLAND F North Sea H
+ENGLAND F Yorkshire S Norway - North Sea
+
+GERMANY F Holland S Helgoland Bight - North Sea
+GERMANY F Helgoland Bight - North Sea
+
+RUSSIA F Skagerrak S Norway - North Sea
+RUSSIA F Norway - North Sea

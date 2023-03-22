@@ -1,0 +1,5 @@
+AUSTRIA F Adriatic Sea C Trieste - Venice
+AUSTRIA A Trieste - Venice VIA CONVOY
+
+ITALY A Venice S Albania - Trieste
+ITALY F Albania - Trieste

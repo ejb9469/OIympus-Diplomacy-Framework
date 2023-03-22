@@ -1,0 +1,4 @@
+TURKEY F Ankara - Constantinople
+TURKEY A Constantinople - Smyrna
+TURKEY A Smyrna - Ankara
+TURKEY A Bulgaria S Ankara - Constantinople

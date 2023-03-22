@@ -1,0 +1,14 @@
+GERMANY F Holland - North Sea
+GERMANY F Helgoland Bight S Holland - North Sea
+GERMANY F Skagerrak S Holland - North Sea
+
+FRANCE F North Sea - Holland
+FRANCE F Belgium S North Sea - Holland
+
+ENGLAND F Edinburgh S Norwegian Sea - North Sea
+ENGLAND F Yorkshire S Norwegian Sea - North Sea
+ENGLAND F Norwegian Sea - North Sea
+ENGLAND F London S Norwegian Sea - North Sea
+
+AUSTRIA A Kiel S Ruhr - Holland
+AUSTRIA A Ruhr - Holland

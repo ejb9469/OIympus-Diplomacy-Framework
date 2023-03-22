@@ -1,0 +1,5 @@
+AUSTRIA F Trieste - Adriatic Sea
+AUSTRIA A Vienna S Venice - Trieste
+
+ITALY A Venice - Trieste
+ITALY F Apulia - Adriatic Sea

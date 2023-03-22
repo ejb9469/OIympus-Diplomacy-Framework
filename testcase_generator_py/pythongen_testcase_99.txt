@@ -1,0 +1,8 @@
+ENGLAND F North Sea C London - Belgium
+ENGLAND A London - Belgium
+ENGLAND F English Channel S London - Belgium
+
+FRANCE F Belgium S North Sea H
+
+GERMANY F Helgoland Bight S Skagerrak - North Sea
+GERMANY F Skagerrak - North Sea

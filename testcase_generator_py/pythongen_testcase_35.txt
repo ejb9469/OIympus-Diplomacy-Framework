@@ -1,0 +1,5 @@
+AUSTRIA F Adriatic Sea S Trieste - Venice
+AUSTRIA A Trieste - Venice
+
+ITALY A Venice H
+ITALY F Ionian Sea - Adriatic Sea

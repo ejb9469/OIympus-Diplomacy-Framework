@@ -1,0 +1,10 @@
+ENGLAND A Liverpool - Edinburgh
+ENGLAND F English Channel C Liverpool - Edinburgh
+
+GERMANY A Edinburgh - Liverpool
+
+FRANCE F Irish Sea H
+FRANCE F North Sea H
+
+RUSSIA F Norwegian Sea C Liverpool - Edinburgh
+RUSSIA F North Atlantic Ocean C Liverpool - Edinburgh

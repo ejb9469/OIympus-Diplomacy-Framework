@@ -1,0 +1,6 @@
+ENGLAND F North Sea C London - Holland
+ENGLAND A London - Holland
+
+GERMANY F Helgoland Bight S Skagerrak - North Sea
+GERMANY F Skagerrak - North Sea
+GERMANY A Belgium - Holland

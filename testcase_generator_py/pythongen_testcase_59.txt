@@ -1,0 +1,7 @@
+ENGLAND F Sweden - Baltic Sea
+ENGLAND F Denmark S Sweden - Baltic Sea
+
+GERMANY A Berlin H
+
+RUSSIA F Baltic Sea C Berlin - Livonia
+RUSSIA F Prussia S Baltic Sea H

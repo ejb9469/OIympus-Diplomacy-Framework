@@ -1,0 +1,5 @@
+FRANCE F Portugal S Gascony - Spain
+FRANCE F Gascony - Spain.nc
+
+ITALY F Gulf of Lyon S Western Mediterranean - Spain.sc
+ITALY F Western Mediterranean - Spain.sc

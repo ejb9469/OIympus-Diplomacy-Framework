@@ -1,0 +1,9 @@
+AUSTRIA F Trieste H
+
+ITALY A Venice - Trieste
+ITALY A Tyrolia S Venice - Trieste
+
+GERMANY A Munich - Tyrolia
+
+RUSSIA A Silesia - Munich
+RUSSIA A Berlin S Silesia - Munich

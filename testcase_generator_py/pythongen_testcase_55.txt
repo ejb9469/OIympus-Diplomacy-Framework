@@ -1,0 +1,5 @@
+ITALY F Gulf of Lyon - Spain.sc
+ITALY F Western Mediterranean S Gulf of Lyon - Spain.sc
+
+FRANCE F Spain(nc) - Gulf of Lyon
+FRANCE F Marseilles S Spain.nc - Gulf of Lyon

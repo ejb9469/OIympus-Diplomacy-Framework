@@ -1,0 +1,13 @@
+ENGLAND F Holland S Ruhr - Kiel
+ENGLAND A Ruhr - Kiel
+
+FRANCE A Kiel - Berlin
+FRANCE A Munich S Kiel - Berlin
+FRANCE A Silesia S Kiel - Berlin
+
+GERMANY A Berlin - Kiel
+GERMANY F Denmark S Berlin - Kiel
+GERMANY F Helgoland Bight S Berlin - Kiel
+
+RUSSIA F Baltic Sea S Prussia - Berlin
+RUSSIA A Prussia - Berlin

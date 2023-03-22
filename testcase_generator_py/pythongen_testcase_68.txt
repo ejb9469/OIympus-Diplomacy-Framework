@@ -1,0 +1,3 @@
+GERMANY A Berlin - Kiel
+GERMANY F Kiel - Berlin
+GERMANY A Munich S Berlin - Kiel

@@ -1,0 +1,5 @@
+FRANCE F Portugal S Mid-Atlantic Ocean - Spain.nc
+FRANCE F Mid-Atlantic Ocean - Spain.sc
+
+ITALY F Gulf of Lyon S Western Mediterranean - Spain.sc
+ITALY F Western Mediterranean - Spain.sc

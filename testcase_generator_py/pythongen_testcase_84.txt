@@ -1,0 +1,5 @@
+ENGLAND F English Channel C London - Brest
+ENGLAND A London - Brest
+ENGLAND F Mid-Atlantic Ocean S London - Brest
+
+FRANCE A Paris - Brest

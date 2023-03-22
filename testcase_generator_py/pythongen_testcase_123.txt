@@ -1,0 +1,9 @@
+ENGLAND F North Sea C London - Belgium
+ENGLAND A Holland S London - Belgium
+ENGLAND A Yorkshire - London
+ENGLAND A London - Belgium
+ENGLAND A Ruhr S London - Belgium
+
+FRANCE F English Channel C Belgium - London
+FRANCE A Belgium - London
+FRANCE A Wales S Belgium - London

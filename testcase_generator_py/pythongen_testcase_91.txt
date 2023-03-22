@@ -1,0 +1,7 @@
+ENGLAND F North Sea C London - Belgium
+ENGLAND A London - Belgium
+
+GERMANY F English Channel C London - Belgium
+
+FRANCE F Brest S Mid-Atlantic Ocean - English Channel
+FRANCE F Mid-Atlantic Ocean - English Channel

@@ -1,0 +1,7 @@
+FRANCE A Marseilles - Gulf of Lyon
+FRANCE F Spain(sc) S Marseilles - Gulf of Lyon
+
+ITALY F Gulf of Lyon H
+
+TURKEY F Tyrrhenian Sea S Western Mediterranean - Gulf of Lyon
+TURKEY F Western Mediterranean - Gulf of Lyon

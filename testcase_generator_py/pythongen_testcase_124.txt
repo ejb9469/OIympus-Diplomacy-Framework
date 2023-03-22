@@ -1,0 +1,9 @@
+AUSTRIA F Trieste H
+AUSTRIA A Serbia H
+
+TURKEY F Greece H
+
+ITALY A Venice S Tyrolia - Trieste
+ITALY A Tyrolia - Trieste
+ITALY F Ionian Sea - Greece
+ITALY F Aegean Sea S Ionian Sea - Greece

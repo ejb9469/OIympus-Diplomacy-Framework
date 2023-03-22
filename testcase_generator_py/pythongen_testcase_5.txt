@@ -1,0 +1,6 @@
+ENGLAND F North Sea C Yorkshire - Yorkshire
+ENGLAND A Yorkshire - Yorkshire
+ENGLAND A Liverpool S Yorkshire - Yorkshire
+
+GERMANY F London - Yorkshire
+GERMANY A Wales S London - Yorkshire

@@ -1,0 +1,7 @@
+ENGLAND F Irish Sea S North Atlantic Ocean - Mid-Atlantic Ocean
+ENGLAND F North Atlantic Ocean - Mid-Atlantic Ocean
+
+FRANCE F Spain(nc) S Mid-Atlantic Ocean
+FRANCE F Mid-Atlantic Ocean H
+
+ITALY F Gulf of Lyon - Spain.sc

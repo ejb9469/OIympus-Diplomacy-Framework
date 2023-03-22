@@ -1,0 +1,6 @@
+GERMANY A Berlin - Sweden
+GERMANY F Baltic Sea C Berlin - Sweden
+GERMANY F Prussia S Baltic Sea H
+
+RUSSIA F Livonia - Baltic Sea
+RUSSIA F Gulf of Bothnia S Livonia - Baltic Sea

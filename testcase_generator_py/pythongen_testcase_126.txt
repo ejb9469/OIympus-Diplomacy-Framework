@@ -1,0 +1,11 @@
+ENGLAND A Liverpool - Edinburgh
+ENGLAND F Yorkshire S Liverpool - Edinburgh
+ENGLAND F Norway H
+
+GERMANY A Kiel S Ruhr - Holland
+GERMANY A Ruhr - Holland
+
+RUSSIA F Edinburgh H
+RUSSIA A Sweden S Finland - Norway
+RUSSIA A Finland - Norway
+RUSSIA F Holland H

@@ -1,0 +1,7 @@
+RUSSIA F Constantinople S Black Sea - Ankara
+RUSSIA F Black Sea - Ankara
+RUSSIA A Bulgaria S Constantinople H
+
+TURKEY F Ankara - Constantinople
+TURKEY A Smyrna S Ankara - Constantinople
+TURKEY A Armenia - Ankara

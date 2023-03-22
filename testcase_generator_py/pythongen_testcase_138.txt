@@ -1,0 +1,8 @@
+ENGLAND F Helgoland Bight - Kiel
+ENGLAND F Denmark S Helgoland Bight - Kiel
+
+GERMANY A Berlin - Prussia
+GERMANY F Kiel H
+GERMANY A Silesia S Berlin - Prussia
+
+RUSSIA A Prussia - Berlin

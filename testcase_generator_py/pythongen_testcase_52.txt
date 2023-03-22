@@ -1,0 +1,5 @@
+ENGLAND F London S North Sea - English Channel
+ENGLAND F North Sea - English Channel
+ENGLAND A Yorkshire - London
+
+FRANCE F English Channel H

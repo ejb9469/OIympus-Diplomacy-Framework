@@ -1,0 +1,7 @@
+ENGLAND F North Sea C London - Belgium
+ENGLAND A Holland S London - Belgium
+ENGLAND A Yorkshire - London
+ENGLAND A London - Belgium VIA CONVOY
+
+FRANCE F English Channel C Belgium - London
+FRANCE A Belgium - London VIA CONVOY

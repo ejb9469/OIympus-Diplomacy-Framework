@@ -1,0 +1,4 @@
+AUSTRIA F Trieste H
+AUSTRIA A Vienna S Venice - Trieste
+
+ITALY A Venice - Trieste

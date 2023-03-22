@@ -1,0 +1,8 @@
+ENGLAND A Kiel H
+
+GERMANY A Berlin - Kiel
+GERMANY A Munich S Berlin - Kiel
+GERMANY A Prussia H
+
+RUSSIA A Warsaw - Prussia
+RUSSIA A Silesia S Warsaw - Prussia
