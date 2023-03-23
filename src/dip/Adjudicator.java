@@ -9,15 +9,14 @@ import java.io.IOException;
 
 public class Adjudicator {
 
-    private Map<Order, OrderResolution> orderResolutions;
     private List<Order> ordersList;
 
-    Adjudicator(List<Order> orders) {
-        orderResolutions = new HashMap<>();
-        for (Order order : orders) {
-            orderResolutions.put(order, OrderResolution.UNRESOLVED);
-        }
-        ordersList = orders;
+    public List<Order> getOrders() {
+        return ordersList;
+    }
+
+    Adjudicator(List<Order> ordersList) {
+        this.ordersList = ordersList;
     }
 
     private static final int INPUT_MODE = 2;
@@ -119,7 +118,7 @@ public class Adjudicator {
     /**
      * The resolve function - all the Diplomacy adjudication logic is in here.
      */
-    void resolve() {
+    public void resolve() {
 
         List<Order> orders = new ArrayList<>(ordersList);
 
@@ -197,7 +196,7 @@ public class Adjudicator {
         List<Order> contestedOrdersNoConvoys = new ArrayList<>(contestedOrders);
         contestedOrdersNoConvoys.removeAll(convoyingArmies);
 
-        for (Order contestedOrder : contestedOrdersNoConvoys) {
+        for (Order contestedOrder : contestedOrders/*NoConvoys*/) {
             if (contestedOrder.orderType != OrderType.MOVE) continue;
             cutSupport(contestedOrder);
         }
@@ -346,6 +345,9 @@ public class Adjudicator {
 
         }
 
+        // Define a map of dislodged orders and attack origins for populating retreat lists later
+        Map<Order, Province> attackOriginMap = new HashMap<>();
+
         // Move units that did not bounce
         List<Order> changedOrders = new ArrayList<>(orders);
         for (Order moveOrder : orders) {
@@ -366,7 +368,12 @@ public class Adjudicator {
                     changedOrders.remove(victim);
                     victim.dislodged = true;
                     changedOrders.add(victim);
-                    // TODO: Populate retreats list
+                    Province attackOrigin = moveOrder.prInitial;
+                    if (convoyingArmies.contains(moveOrder)) {
+                        List<Order> convoyPath = convoyPaths.get(moveOrder);
+                        attackOrigin = convoyPath.get(convoyPath.size()-1).parentUnit.getPosition();
+                    }
+                    attackOriginMap.put(victim, attackOrigin);
                 }
             }
             unbounce(moveOrder.parentUnit.getPosition());
@@ -376,6 +383,14 @@ public class Adjudicator {
         }
 
         ordersList = changedOrders;
+
+        // Populate retreats list for dislodged units
+        List<Unit> unitsList = new ArrayList<>();
+        for (Order order : orders)
+            unitsList.add(order.parentUnit);
+        for (Order victim : attackOriginMap.keySet()) {
+            victim.parentUnit.populateRetreatsList(attackOriginMap.get(victim), unitsList);
+        }
 
         printUnits(ordersList, "FINAL STATE: ");
         System.out.println();
@@ -426,7 +441,7 @@ public class Adjudicator {
 
     /**
      * Cut support procedure
-     * @param moveOrder
+     * @param moveOrder Move order to cut supports with
      * @return Whether *any* support was cut
      */
     private boolean cutSupport(Order moveOrder) {
@@ -630,7 +645,7 @@ public class Adjudicator {
 
     }
 
-    private static void printUnits(Collection<Order> orders, String preamble) {
+    public void printUnits(Collection<Order> orders, String preamble) {
         if (!preamble.isBlank()) {
             System.out.println("\t".repeat(tabsCounter) + preamble);
             if (currentFileWriter != null) {
@@ -643,8 +658,10 @@ public class Adjudicator {
         }
         for (Order order : orders) {
             String unitText = "\t".repeat(tabsCounter) + order.parentUnit.toString();
-            if (order.dislodged)
+            if (order.dislodged) {
                 unitText += " :: DISLODGED";
+                unitText += "\n" + "\t".repeat(tabsCounter+1) + "POSSIBLE RETREATS: " + order.parentUnit.getPossibleRetreats();
+            }
             System.out.println(unitText);
             if (currentFileWriter != null) {
                 try {
@@ -664,7 +681,7 @@ public class Adjudicator {
         }
     }
 
-    private static void printOrders(Collection<Order> orders, String preamble) {
+    public void printOrders(Collection<Order> orders, String preamble) {
 
         if (!preamble.isBlank())
             System.out.println("\t".repeat(tabsCounter) + preamble);
@@ -678,11 +695,11 @@ public class Adjudicator {
 
     }
 
-    private static void printOrders(Collection<Order> orders) {
+    public void printOrders(Collection<Order> orders) {
         printOrders(orders, "");
     }
 
-    private static void printUnits(Collection<Order> orders) {
+    public void printUnits(Collection<Order> orders) {
         printUnits(orders, "");
     }
 

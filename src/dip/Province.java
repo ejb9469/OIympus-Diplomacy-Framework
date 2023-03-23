@@ -140,12 +140,15 @@ public enum Province {
     }
 
     boolean isAdjacentTo(Province province) {
+        if (province == Province.Swi || this == Province.Swi) return false;
         return (Arrays.asList(adjacencyMap.get(this)).contains(province));
     }
 
     boolean isCoastal() {
         return (waterAccess == 1);
     }
+
+    boolean isWater() {return (waterAccess == 2); }
 
     boolean isSupplyCenter() {
         return supplyCenter;

@@ -7,6 +7,9 @@ public class GameState implements Runnable {
     public static final int TIME_CONTROL = 5 * 60;  // Measured in seconds per phase
     public static final int YEAR_CONTROL = 1908;  // Measured in game years
 
+    public static final int RETREATS_TIME_CONTROL = 2 * 60;
+    public static final int BUILDS_TIME_CONTROL = 3 * 60;
+
     public static final boolean SHOW_NUM_DRAW_REJECTORS = true;
 
     static boolean gameOver = false;
@@ -24,11 +27,6 @@ public class GameState implements Runnable {
     static Map<Nation, Integer> supplyCounts = new HashMap<>();
 
     static Set<Set<NationState>> drawHistory = new HashSet<>();
-
-    private static OrderResolution[] orderResolutions = new OrderResolution[34];
-    private static OrderState[] orderStates = new OrderState[34];
-    private static int[] orderDependencies = new int[34];
-    private static int numDependencies = 0;
 
     private GameState() {}  // Empty constructor for Singleton use
 
@@ -60,6 +58,20 @@ public class GameState implements Runnable {
                     ex.printStackTrace();
                 }
                 // ADJUDICATION \\
+                boolean retreatsNeeded = process();
+                incrementSeason(retreatsNeeded);
+
+                // RETREATS \\
+                if (retreatsNeeded) {
+                    try {
+                        Thread.sleep(RETREATS_TIME_CONTROL * 1000);  // TODO: Ditto
+                    } catch (InterruptedException ex) {
+                        System.out.println("GAME FORCE-ENDED!!");
+                        ex.printStackTrace();
+                    }
+                    processRetreats();
+                    incrementSeason(false);
+                }
 
         }
     }
@@ -247,7 +259,11 @@ public class GameState implements Runnable {
         }
     }
 
-    private static void process() {
+    /**
+     * Adjudicates all orders and updates state accordingly
+     * @return True if retreats phase needed
+     */
+    private static boolean process() {
 
         List<Order> allOrders = new ArrayList<>();
         for (NationState nationState : nationStates) {
@@ -259,78 +275,27 @@ public class GameState implements Runnable {
         Adjudicator adjudicator = new Adjudicator(allOrders);
         adjudicator.resolve();
 
-    }
+        boolean retreatsNeeded = false;
 
-    private static OrderResolution resolve(int nr) {
-
-        int i, oldNumDependencies;
-        OrderResolution firstResult, secondResult;
-
-        // BASE CASE :: If the order is resolved, return
-        if (orderStates[nr] == OrderState.RESOLVED)
-            return orderResolutions[nr];
-
-        // If the order is UNRESOLVED, look if the resolution of the order is dependent on the resolution of other orders.
-        if (orderStates[nr] == OrderState.GUESSING) {
-            i = 0;
-            while (i < numDependencies) {
-                if (orderDependencies[i++] == nr) {
-                    return orderResolutions[nr];
-                }
-            }
+        // Update units; shed orders
+        List<Order> updatedOrders = adjudicator.getOrders();
+        Map<Nation, List<Unit>> nationsUnits = new HashMap<>();
+        for (Nation nation : nations())
+            nationsUnits.put(nation, new ArrayList<>());
+        for (Order order : updatedOrders) {
+            retreatsNeeded = retreatsNeeded || order.dislodged;
+            order.parentUnit.resetOrder();
+            nationsUnits.get(order.parentUnit.getParentNation()).add(order.parentUnit);
         }
+        for (NationState nationState : nationStates)
+            nationState.setUnits(nationsUnits.get(nationState.getNation()));
 
-        oldNumDependencies = numDependencies;
-
-        orderResolutions[nr] = OrderResolution.FAILS;
-        orderStates[nr] = OrderState.GUESSING;
-
-        firstResult = adjudicate(nr);
-
-        if (numDependencies == oldNumDependencies) {
-            if (orderStates[nr] != OrderState.RESOLVED) {
-                orderResolutions[nr] = firstResult;
-                orderStates[nr] = OrderState.RESOLVED;
-            }
-            return firstResult;
-        }
-
-        if (orderDependencies[oldNumDependencies] != nr) {
-            orderDependencies[numDependencies++] = nr;
-            orderResolutions[nr] = firstResult;
-            return firstResult;
-        }
-
-        while (numDependencies > oldNumDependencies) {
-            orderStates[orderDependencies[--numDependencies]] = OrderState.UNRESOLVED;
-        }
-
-        orderResolutions[nr] = OrderResolution.SUCCEEDS;
-        orderStates[nr] = OrderState.GUESSING;
-
-        secondResult = adjudicate(nr);
-
-        if (firstResult == secondResult) {
-            while (numDependencies > oldNumDependencies) {
-                orderStates[orderDependencies[--numDependencies]] = OrderState.UNRESOLVED;
-            }
-            orderResolutions[nr] = firstResult;
-            orderStates[nr] = OrderState.RESOLVED;
-            return firstResult;
-        }
-
-        backupRule(oldNumDependencies);
-
-        return resolve(nr);
+        return retreatsNeeded;
 
     }
 
-    private static OrderResolution adjudicate(int nr) {  // TODO
-        return OrderResolution.UNRESOLVED;  // placeholder
-    }
-
-    private static void backupRule(int nr) {
-
+    private static void processRetreats() {
+        
     }
 
     /**

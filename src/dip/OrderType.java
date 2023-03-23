@@ -7,4 +7,7 @@ public enum OrderType {
     MOVE,
     SUPPORT,
     CONVOY,
+    BUILD,
+    REMOVE,
+    RETREAT
 }

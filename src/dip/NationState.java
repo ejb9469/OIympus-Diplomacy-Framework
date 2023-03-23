@@ -7,9 +7,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class NationState {  // This is a pun
+public class NationState {  // This is an unintentional pun
 
-    private Nation nation;  // Is a list (not a set) to show relative order of acquisition
+    private Nation nation;
 
     private boolean dead;
 
@@ -103,6 +103,11 @@ public class NationState {  // This is a pun
 
     public List<Unit> getUnits() {
         return units;
+    }
+
+    public void setUnits(List<Unit> units) {
+        this.unitHistory.add(units);
+        this.units = units;
     }
 
     public List<List<Unit>> getUnitHistory() {

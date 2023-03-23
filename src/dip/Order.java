@@ -7,20 +7,18 @@ import java.util.List;
 
 public class Order {
 
-    OrderState state;  //  Unresolved (0), Guessing (1), Resolved (2)
-    OrderResolution orderResolution;  // Succeeds (0), fails (1), or unresolved (2)
-
     Unit parentUnit;
     OrderType orderType;  // -1 = NMR, 0 = hold, 1 = move, 2 = support, 3 = convoy
     Province pr1;
     Province pr2;
     boolean viaConvoy = false;
 
+    boolean deleteMe = false;
+
     Province prInitial;
 
     // Retreat flags
-    boolean dislodged = false;
-    List<Province> possibleRetreats = new ArrayList<>();
+    boolean dislodged;
 
     // Move flags
     boolean bounce = false;

@@ -1,0 +1,18 @@
+ENGLAND F Edinburgh - North Sea
+ENGLAND F Yorkshire S Edinburgh - North Sea
+
+FRANCE A Brest - London
+FRANCE F English Channel C Brest - London
+
+GERMANY F Belgium S English Channel H
+GERMANY F London S North Sea H
+
+ITALY F Mid-Atlantic Ocean - English Channel
+ITALY F Irish Sea S Mid-Atlantic Ocean - English Channel
+
+RUSSIA A Norway - Belgium
+RUSSIA F North Sea C Norway - Belgium
+
+AUSTRIA A Holland S Norway - Belgium
+
+TURKEY F Denmark S North Sea H

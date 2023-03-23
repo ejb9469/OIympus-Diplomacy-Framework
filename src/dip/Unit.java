@@ -1,7 +1,6 @@
 package dip;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class Unit {
 
@@ -16,6 +15,27 @@ public class Unit {
     private List<Order> orderHistory;
 
     private Order actingOrder;
+    private List<Province> possibleRetreats = new ArrayList<>();
+
+    public void populateRetreatsList(Province attackOrigin, Collection<Unit> units) {
+        Set<Province> occupiedProvinces = new HashSet<>();  // Sets cannot contain duplicates
+        for (Unit unit : units)
+            occupiedProvinces.add(unit.getPosition());
+        for (Province province : Province.values()) {
+            if (province != position && province.isAdjacentTo(position) && province != attackOrigin && !occupiedProvinces.contains(province)) {
+                if ((unitType == 0 && province.isWater()) || (unitType == 1 && !province.isCoastal() && !province.isWater())) continue;
+                possibleRetreats.add(province);
+            }
+        }
+    }
+
+    public void wipeRetreatsList() {
+        possibleRetreats = new ArrayList<>();
+    }
+
+    public List<Province> getPossibleRetreats() {
+        return possibleRetreats;
+    }
 
     public void updateActingOrder(Order newOrder) {
         this.actingOrder = newOrder;

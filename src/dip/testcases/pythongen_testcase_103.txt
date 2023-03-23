@@ -1,0 +1,11 @@
+ENGLAND F Edinburgh - North Sea
+ENGLAND F London S Edinburgh - North Sea
+
+FRANCE A Brest - London
+FRANCE F English Channel C Brest - London
+
+GERMANY F Belgium S Picardy - English Channel
+GERMANY F Picardy - English Channel
+
+RUSSIA A Norway - Belgium
+RUSSIA F North Sea C Norway - Belgium
