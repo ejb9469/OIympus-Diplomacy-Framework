@@ -1,0 +1,9 @@
+FRANCE A Spain - Portugal VIA CONVOY
+FRANCE F Mid-Atlantic Ocean C Spain - Portugal
+FRANCE F Gulf of Lyon S Portugal - Spain.nc
+
+GERMANY A Marseilles S Gascony - Spain
+GERMANY A Gascony - Spain
+
+ITALY F Portugal - Spain.nc
+ITALY F Western Mediterranean S Portugal - Spain.nc

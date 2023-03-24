@@ -1,0 +1,6 @@
+FRANCE F Brest - English Channel
+FRANCE A Picardy - Belgium
+FRANCE A Burgundy S Picardy - Belgium
+FRANCE F Mid-Atlantic Ocean S Brest - English Channel
+
+ENGLAND F English Channel C Picardy - Belgium

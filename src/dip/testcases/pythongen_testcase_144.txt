@@ -1,0 +1,9 @@
+ENGLAND A Picardy H
+ENGLAND F English Channel S Picardy - Belgium
+
+FRANCE A Paris - Picardy
+FRANCE A Brest S Paris - Picardy
+FRANCE A Burgundy H
+
+GERMANY A Munich S Marseilles - Burgundy
+GERMANY A Marseilles - Burgundy

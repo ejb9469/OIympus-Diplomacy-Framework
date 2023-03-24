@@ -1,0 +1,6 @@
+ENGLAND F Norway S North Sea - Skagerrak
+ENGLAND F North Sea - Skagerrak
+
+RUSSIA A Sweden - Norway
+RUSSIA F Skagerrak C Sweden - Norway
+RUSSIA F Barents Sea S Sweden - Norway

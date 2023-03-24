@@ -1,0 +1,8 @@
+AUSTRIA A Budapest S Trieste - Vienna
+AUSTRIA A Trieste - Vienna
+
+GERMANY A Munich S Silesia - Bohemia
+GERMANY A Silesia - Bohemia
+
+ITALY A Vienna H
+ITALY A Bohemia H

@@ -127,12 +127,18 @@ public class Adjudicator {
 
         convoyingArmies = findConvoyingArmies(orders);
 
+        Set<Order> voidedOrders = new HashSet<>();
         for (Order convoyingArmy : convoyingArmies) {
             List<Order> convoyPath = drawConvoyPath(orders, convoyingArmy);
             if (convoyPath.size() == 0)
-                convoyingArmy.orderType = OrderType.VOID;
+                voidedOrders.add(convoyingArmy);
             else
                 convoyPaths.put(convoyingArmy, convoyPath);
+        }
+
+        for (Order order : voidedOrders) {
+            convoyingArmies.remove(order);
+            order.orderType = OrderType.VOID;
         }
 
         contestedOrders = findContestedOrders(orders);
@@ -143,6 +149,7 @@ public class Adjudicator {
         //printOrders(correspondingSupports, "CORRESPONDING SUPPORTS:");
         //System.out.println("======\n");
 
+        // Replace invalid supports with holds
         List<Order> invalidSupports = new ArrayList<>();
         for (Order order : orders) {
             if (order.orderType == OrderType.SUPPORT) {
@@ -154,13 +161,12 @@ public class Adjudicator {
                     if (order.equals(order2)) continue;
                     if (order.pr1 == order2.parentUnit.getPosition()) {
                         found = true;
-                        supportMap.put(order, order2);
-                        if (order2.orderType == OrderType.MOVE) {  // Support-to-hold on a MOVE order
-                            if (order.pr1 == order.pr2)
-                                invalidSupports.add(order);
+                        if (order2.orderType == OrderType.MOVE && order.pr1 == order.pr2) {  // Support-to-hold on a MOVE order
+                            invalidSupports.add(order);
+                        } else if (order.pr1 != order.pr2) { // Support-to-move on a stationary order
+                            invalidSupports.add(order);
                         } else {
-                            if (order.pr1 != order.pr2)  // Support-to-move on a stationary order
-                                invalidSupports.add(order);
+                            supportMap.put(order, order2);
                         }
                         break;
                     }
@@ -170,7 +176,26 @@ public class Adjudicator {
             }
         }
 
-        // Replace invalid supports with holds
+        // Replace invalid convoys with holds
+        for (Order order : orders) {
+            if (order.orderType == OrderType.CONVOY) {
+                boolean found = false;
+                for (Order order2 : orders) {
+                    if (order.equals(order2)) continue;
+                    if (order2.orderType != OrderType.MOVE) continue;
+                    if (order.pr1 == order.parentUnit.getPosition() && order.pr2 == order2.pr2) {
+                        found = true;
+                        if (order.pr1.isAdjacentTo(order.pr2) && !order2.viaConvoy)
+                            invalidSupports.add(order);
+                        break;
+                    }
+                }
+                if (!found)
+                    invalidSupports.add(order);
+            }
+        }
+
+        // Replace invalid supports and convoys with holds
         for (Order invalidSupport : invalidSupports) {
             orders.remove(invalidSupport);
             orders.add(new Order(invalidSupport.parentUnit, OrderType.HOLD, invalidSupport.parentUnit.getPosition(), invalidSupport.parentUnit.getPosition()));

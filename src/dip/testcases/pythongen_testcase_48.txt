@@ -1,0 +1,5 @@
+ENGLAND A London H
+ENGLAND F North Sea C Belgium - London
+
+FRANCE F English Channel S Belgium - London
+FRANCE A Belgium - London

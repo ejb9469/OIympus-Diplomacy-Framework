@@ -1,0 +1,10 @@
+ENGLAND F Edinburgh S Yorkshire - North Sea
+ENGLAND F Yorkshire - North Sea
+
+FRANCE F Belgium - North Sea
+FRANCE F English Channel S Belgium - North Sea
+
+GERMANY F North Sea H
+
+RUSSIA F Norwegian Sea - North Sea
+RUSSIA F Norway S Norwegian Sea - North Sea

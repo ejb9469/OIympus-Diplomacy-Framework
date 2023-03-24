@@ -1,0 +1,5 @@
+GERMANY A Berlin - Prussia
+GERMANY F Kiel - Berlin
+GERMANY A Silesia S Berlin - Prussia
+
+RUSSIA A Prussia - Berlin

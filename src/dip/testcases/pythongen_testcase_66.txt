@@ -1,0 +1,8 @@
+GERMANY A Berlin - Prussia
+GERMANY A Silesia S Berlin - Prussia
+GERMANY F Baltic Sea S Berlin - Prussia
+
+ITALY A Prussia S Livonia - Prussia
+
+RUSSIA A Warsaw S Livonia - Prussia
+RUSSIA A Livonia - Prussia

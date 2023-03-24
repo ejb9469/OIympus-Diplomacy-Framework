@@ -1,0 +1,12 @@
+ENGLAND A Liverpool - Edinburgh VIA CONVOY
+ENGLAND F Irish Sea C Liverpool - Edinburgh
+ENGLAND F English Channel C Liverpool - Edinburgh
+ENGLAND F North Sea C Liverpool - Edinburgh
+
+FRANCE F Brest - English Channel
+FRANCE F Mid-Atlantic Ocean S Brest - English Channel
+
+RUSSIA A Edinburgh - Liverpool VIA CONVOY
+RUSSIA F Norwegian Sea C Edinburgh - Liverpool
+RUSSIA F North Atlantic Ocean C Edinburgh - Liverpool
+RUSSIA A Clyde S Edinburgh - Liverpool

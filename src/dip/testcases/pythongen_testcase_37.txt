@@ -1,0 +1,6 @@
+GERMANY A Berlin S Munich - Silesia
+GERMANY F Kiel S Berlin H
+GERMANY A Munich - Silesia
+
+RUSSIA F Baltic Sea S Prussia - Berlin
+RUSSIA A Prussia - Berlin

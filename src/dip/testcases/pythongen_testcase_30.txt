@@ -1,0 +1,10 @@
+AUSTRIA A Trieste - Serbia
+AUSTRIA A Serbia - Bulgaria
+
+TURKEY A Bulgaria - Trieste
+TURKEY F Aegean Sea C Bulgaria - Trieste
+TURKEY F Ionian Sea C Bulgaria - Trieste
+TURKEY F Adriatic Sea C Bulgaria - Trieste
+
+ITALY F Naples - Ionian Sea
+ITALY F Tunis S Naples - Ionian Sea

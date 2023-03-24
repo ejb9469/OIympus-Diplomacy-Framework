@@ -1,0 +1,5 @@
+GERMANY A Berlin S Kiel H
+GERMANY F Kiel S Berlin H
+
+RUSSIA F Baltic Sea S Prussia - Berlin
+RUSSIA A Prussia - Berlin

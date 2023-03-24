@@ -1,0 +1,5 @@
+ENGLAND A Picardy H
+ENGLAND F English Channel C Picardy - London
+
+FRANCE A Paris - Picardy
+FRANCE A Brest S Paris - Picardy

@@ -1,0 +1,11 @@
+ENGLAND A Norway - Sweden
+ENGLAND F Denmark S Norway - Sweden
+ENGLAND F Finland S Norway - Sweden
+
+FRANCE F Norwegian Sea - Norway
+FRANCE F North Sea S Norwegian Sea - Norway
+
+GERMANY F Skagerrak C Sweden - Norway
+
+RUSSIA A Sweden - Norway VIA CONVOY
+RUSSIA F Barents Sea S Sweden - Norway

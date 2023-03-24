@@ -1,0 +1,5 @@
+ENGLAND F North Sea H
+ENGLAND A Holland H
+
+GERMANY F Kiel S Ruhr - Holland
+GERMANY A Ruhr - Holland

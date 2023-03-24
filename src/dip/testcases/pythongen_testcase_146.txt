@@ -1,0 +1,6 @@
+FRANCE F Mid-Atlantic Ocean - Spain.nc
+FRANCE F Gascony - Spain.nc
+FRANCE F Western Mediterranean H
+
+ITALY F Tunis S Tyrrhenian Sea - Western Mediterranean
+ITALY F Tyrrhenian Sea - Western Mediterranean

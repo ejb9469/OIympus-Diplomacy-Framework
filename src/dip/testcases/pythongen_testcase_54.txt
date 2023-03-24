@@ -1,0 +1,5 @@
+GERMANY F Kiel - Munich
+GERMANY A Burgundy S Kiel - Munich
+
+RUSSIA A Munich - Kiel
+RUSSIA A Berlin S Munich - Kiel

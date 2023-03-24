@@ -1,0 +1,6 @@
+ITALY F Aegean Sea S Constantinople H
+
+RUSSIA F Constantinople - Bulgaria
+
+TURKEY F Black Sea - Constantinople
+TURKEY A Bulgaria S Black Sea - Constantinople

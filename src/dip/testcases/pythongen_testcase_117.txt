@@ -1,0 +1,8 @@
+ENGLAND A Liverpool - Edinburgh VIA CONVOY
+ENGLAND F North Atlantic Ocean C Liverpool - Edinburgh
+ENGLAND F Norwegian Sea C Liverpool - Edinburgh
+
+GERMANY A Edinburgh - Liverpool VIA CONVOY
+GERMANY F North Sea C Edinburgh - Liverpool
+GERMANY F English Channel C Edinburgh - Liverpool
+GERMANY F Irish Sea C Edinburgh - Liverpool
