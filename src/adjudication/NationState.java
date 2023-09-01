@@ -1,6 +1,6 @@
-package dip;
+package adjudication;
 
-import dip.exceptions.UnitMismatchException;
+import adjudication.exceptions.UnitMismatchException;
 
 import java.util.ArrayList;
 import java.util.List;

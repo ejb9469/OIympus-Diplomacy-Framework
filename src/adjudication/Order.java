@@ -1,6 +1,6 @@
-package dip;
+package adjudication;
 
-import dip.exceptions.BadOrderException;
+import adjudication.exceptions.BadOrderException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +30,8 @@ public class Order {
 
     // Support flags
     boolean cut = false;
-    List<Order> noHelpList = new ArrayList<>();  // List of Orders that this order cannot receive support from under certain circumstances, most notably same-power support
+    // List of Orders that this order cannot receive support from under certain circumstances, most notably same-power support
+    List<Order> noHelpList = new ArrayList<>();
 
     public static Order parseUnit(String lingo) throws BadOrderException {
 

@@ -1,13 +1,13 @@
-package dip;
+package adjudication;
 
-import dip.exceptions.BadOrderException;
+import adjudication.exceptions.BadOrderException;
 
 import java.io.FileWriter;
 import java.util.*;
 import java.io.File;
 import java.io.IOException;
 
-public class Adjudicator {
+public class Adjudicator implements Runnable {
 
     private List<Order> ordersList;
 
@@ -70,13 +70,14 @@ public class Adjudicator {
                 file.createNewFile();
                 currentFileWriter = new FileWriter(file.getAbsolutePath());
                 tabsCounter = 0;
+                if (!testCaseFile.getName().contains("BACKSTABBR NEXUS") || !testCaseFile.getName().contains("1902")) continue;
                 System.out.println(testCaseFile.getName() + "\n");
                 currentFileWriter.write(testCaseFile.getName() + "\n\n");
                 orders = new ArrayList<>();
                 sc = new Scanner(testCaseFile);
                 tabsCounter = 1;
                 boolean abbreviated = !testCaseFile.getName().startsWith("pythongen_");
-                //if (abbreviated) continue;
+                //if (!abbreviated) continue;
                 while (sc.hasNextLine()) {
                     String orderText = sc.nextLine();
                     if (orderText.isBlank()) continue;
@@ -163,7 +164,7 @@ public class Adjudicator {
                         found = true;
                         if (order2.orderType == OrderType.MOVE && order.pr1 == order.pr2) {  // Support-to-hold on a MOVE order
                             invalidSupports.add(order);
-                        } else if (order.pr1 != order.pr2) { // Support-to-move on a stationary order
+                        } else if (order2.orderType != OrderType.MOVE && order.pr1 != order.pr2) { // Support-to-move on a stationary order
                             invalidSupports.add(order);
                         } else {
                             supportMap.put(order, order2);
@@ -284,13 +285,13 @@ public class Adjudicator {
                     if (attackedUnit.pr1 != moveOrder.parentUnit.getPosition()) continue;
                     if (moveOrder.parentUnit.getParentNation() == attackedUnit.parentUnit.getParentNation()
                             || supportCounts.get(moveOrder) - moveOrder.noHelpList.size() <= supportCounts.get(attackedUnit)) {
-                        //System.out.println("No-swap Type A bounce() called for " + moveOrder.parentUnit);
+                        System.out.println("No-swap Type A bounce() called for " + moveOrder.parentUnit);
                         bounce(moveOrder);
                         anyUnitBounced = true;
                     }
                     if (moveOrder.parentUnit.getParentNation() == attackedUnit.parentUnit.getParentNation()
                             || supportCounts.get(attackedUnit) - attackedUnit.noHelpList.size() <= supportCounts.get(moveOrder)) {
-                        //System.out.println("No-swap Type B bounce() called for " + moveOrder.parentUnit);
+                        System.out.println("No-swap Type B bounce() called for " + moveOrder.parentUnit);
                         bounce(attackedUnit);
                         anyUnitBounced = true;
                     }
@@ -310,7 +311,7 @@ public class Adjudicator {
                         }
                     }
                     if (!isStrongest && battler.orderType == OrderType.MOVE && !battler.bounce) {
-                        //System.out.println("Understrength attackers bounce() called for " + battler.parentUnit);
+                        System.out.println("Understrength attackers bounce() called for " + battler.parentUnit);
                         bounce(battler);
                         anyUnitBouncedOuter = true;
                     }
@@ -338,7 +339,7 @@ public class Adjudicator {
                 if (victim == null) continue;
                 if (victim.orderType == OrderType.MOVE && !victim.bounce) continue;
                 if (victim.parentUnit.getParentNation() == strongestBattler.parentUnit.getParentNation()) {
-                    //System.out.println("No self-dislodge Type A bounce() called for " + strongestBattler.parentUnit);
+                    System.out.println("No self-dislodge Type A bounce() called for " + strongestBattler.parentUnit);
                     bounce(strongestBattler);
                     anyUnitBouncedOuter = true;
                     continue;
@@ -347,7 +348,7 @@ public class Adjudicator {
                 for (Order battler : battleList.get(province)) {
                     if (battler.equals(strongestBattler)) continue;
                     if (supportCounts.get(battler) >= strongestBattlerSupportCount) {
-                        //System.out.println("No self-dislodge Type B bounce() called for " + strongestBattler.parentUnit);
+                        System.out.println("No self-dislodge Type B bounce() called for " + strongestBattler.parentUnit);
                         bounce(strongestBattler);
                         anyUnitBouncedOuter = true;
                         break;
@@ -671,6 +672,7 @@ public class Adjudicator {
     }
 
     public void printUnits(Collection<Order> orders, String preamble) {
+        if (preamble == null) preamble = "";
         if (!preamble.isBlank()) {
             System.out.println("\t".repeat(tabsCounter) + preamble);
             if (currentFileWriter != null) {
@@ -708,6 +710,7 @@ public class Adjudicator {
 
     public void printOrders(Collection<Order> orders, String preamble) {
 
+        if (preamble == null) preamble = "";
         if (!preamble.isBlank())
             System.out.println("\t".repeat(tabsCounter) + preamble);
 
@@ -728,4 +731,11 @@ public class Adjudicator {
         printUnits(orders, "");
     }
 
+    /**
+     * Adjudicator.run() is for thread context ONLY!!
+     */
+    @Override
+    public void run() {
+        resolve();
+    }
 }

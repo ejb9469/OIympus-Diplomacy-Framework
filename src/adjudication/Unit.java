@@ -1,4 +1,4 @@
-package dip;
+package adjudication;
 
 import java.util.*;
 
@@ -16,6 +16,9 @@ public class Unit {
 
     private Order actingOrder;
     private List<Province> possibleRetreats = new ArrayList<>();
+
+    // This field is only for test cases
+    public boolean testCaseRetreat = false;
 
     public void populateRetreatsList(Province attackOrigin, Collection<Unit> units) {
         Set<Province> occupiedProvinces = new HashSet<>();  // Sets cannot contain duplicates

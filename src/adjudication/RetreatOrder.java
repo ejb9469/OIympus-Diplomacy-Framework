@@ -1,4 +1,4 @@
-package dip;
+package adjudication;
 
 public class RetreatOrder extends Order {
 
