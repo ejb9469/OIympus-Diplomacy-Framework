@@ -1,3 +1,5 @@
+package indexing;
+
 public enum EndCondition {
     ACTIVE,
     SOLO,

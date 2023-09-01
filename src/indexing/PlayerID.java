@@ -1,3 +1,5 @@
+package indexing;
+
 public class PlayerID extends Tag {
 
     private final String firstName;

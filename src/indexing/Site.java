@@ -1,3 +1,5 @@
+package indexing;
+
 public class Site extends Tag {
 
     private final String address;

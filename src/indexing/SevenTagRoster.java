@@ -1,3 +1,5 @@
+package indexing;
+
 import java.util.Arrays;
 
 public class SevenTagRoster {

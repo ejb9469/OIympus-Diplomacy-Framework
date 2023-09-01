@@ -1,20 +1,22 @@
+package indexing;
+
 public class PGN {
 
     public SevenTagRoster sevenTagRoster;
     public Tag[] optionalTags;
-    public MoveText moveText;
+    public Movetext moveText;
 
-    public PGN(SevenTagRoster sevenTagRoster, Tag[] optionalTags, MoveText moveText) {
+    public PGN(SevenTagRoster sevenTagRoster, Tag[] optionalTags, Movetext moveText) {
         this.sevenTagRoster = sevenTagRoster;
         this.optionalTags = optionalTags;
         this.moveText = moveText;
     }
 
     public PGN(SevenTagRoster sevenTagRoster, Tag[] optionalTags, String moveText) {
-        this(sevenTagRoster, optionalTags, new MoveText(moveText));
+        this(sevenTagRoster, optionalTags, new Movetext(moveText));
     }
 
-    public PGN(SevenTagRoster sevenTagRoster, MoveText moveText) {
+    public PGN(SevenTagRoster sevenTagRoster, Movetext moveText) {
         this(sevenTagRoster, null, moveText);
     }
 
