@@ -1,6 +1,6 @@
 package indexing;
 
-public class PlayerID extends Tag {
+public class PlayerID implements Tag {
 
     private final String firstName;
     private final String middleInitial;

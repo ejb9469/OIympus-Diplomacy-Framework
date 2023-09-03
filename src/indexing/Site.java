@@ -1,6 +1,6 @@
 package indexing;
 
-public class Site extends Tag {
+public class Site implements Tag {
 
     private final String address;
     private final String city;

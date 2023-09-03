@@ -15,9 +15,15 @@ public class Adjudicator implements Runnable {
         return ordersList;
     }
 
+    public void setOrders(List<Order> ordersList) {
+        this.ordersList = ordersList;
+    }
+
     public Adjudicator(List<Order> ordersList) {
         this.ordersList = ordersList;
     }
+
+    public Adjudicator(){}
 
     private static final int INPUT_MODE = 2;
     private static FileWriter currentFileWriter = null;

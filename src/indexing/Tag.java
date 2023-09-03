@@ -1,5 +1,5 @@
 package indexing;
 
-public abstract class Tag {
+public interface Tag {
 
 }

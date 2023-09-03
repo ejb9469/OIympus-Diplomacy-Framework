@@ -2,7 +2,7 @@ package indexing;
 
 import java.util.Date;
 
-public class Event extends Tag {
+public class Event implements Tag {
 
     private String name;
     private Site site;
