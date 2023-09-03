@@ -1,12 +1,12 @@
 package adjudication;
 
-public enum OrderState {
+public enum ORDER_STATE {
 
     UNRESOLVED((byte)0),
     GUESSING((byte)1),
     RESOLVED((byte)2);
 
-    OrderState(byte state) {
+    ORDER_STATE(byte state) {
     }
 
 }

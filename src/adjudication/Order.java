@@ -8,14 +8,14 @@ import java.util.List;
 public class Order {
 
     public Unit parentUnit;
-    public OrderType orderType;  // -1 = NMR, 0 = hold, 1 = move, 2 = support, 3 = convoy
-    public Province pr1;
-    public Province pr2;
+    public ORDER_TYPE orderType;  // -1 = NMR, 0 = hold, 1 = move, 2 = support, 3 = convoy
+    public PROVINCE pr1;
+    public PROVINCE pr2;
     public boolean viaConvoy = false;
 
     public boolean deleteMe = false;
 
-    public Province prInitial;
+    public PROVINCE prInitial;
 
     // Retreat flags
     public boolean dislodged;
@@ -53,33 +53,33 @@ public class Order {
         if (unitTypeString.equals("F"))
             unitTypeInt = 1;
 
-        Unit unit = new Unit(Nation.valueOf(unitNationString), Province.valueOf(unitPositionString), unitTypeInt);
+        Unit unit = new Unit(NATION.valueOf(unitNationString), PROVINCE.valueOf(unitPositionString), unitTypeInt);
         String orderTypeString = lingoArray[3];
 
-        OrderType orderType;
+        ORDER_TYPE orderType;
 
-        Province province1;
-        Province province2;
+        PROVINCE province1;
+        PROVINCE province2;
 
         if (orderTypeString.equals("-")) {
-            orderType = OrderType.MOVE;
-            province1 = Province.valueOf(lingoArray[4]);
+            orderType = ORDER_TYPE.MOVE;
+            province1 = PROVINCE.valueOf(lingoArray[4]);
             province2 = province1;
         } else if (orderTypeString.equals("H")) {
-            orderType = OrderType.HOLD;
-            province1 = Province.valueOf(unitPositionString);
+            orderType = ORDER_TYPE.HOLD;
+            province1 = PROVINCE.valueOf(unitPositionString);
             province2 = province1;
         } else if (orderTypeString.equals("S")) {
-            orderType = OrderType.SUPPORT;
-            province1 = Province.valueOf(lingoArray[4]);
+            orderType = ORDER_TYPE.SUPPORT;
+            province1 = PROVINCE.valueOf(lingoArray[4]);
             if (lingoArray[lingoArray.length-1].equals("H"))
                 province2 = province1;
             else
-                province2 = Province.valueOf(lingoArray[6]);
+                province2 = PROVINCE.valueOf(lingoArray[6]);
         } else if (orderTypeString.equals("C")) {
-            orderType = OrderType.CONVOY;
-            province1 = Province.valueOf(lingoArray[4]);
-            province2 = Province.valueOf(lingoArray[6]);
+            orderType = ORDER_TYPE.CONVOY;
+            province1 = PROVINCE.valueOf(lingoArray[4]);
+            province2 = PROVINCE.valueOf(lingoArray[6]);
         } else {
             throw new BadOrderException();
         }
@@ -96,12 +96,12 @@ public class Order {
         return true;  // TODO - .borders(), etc.
     }
 
-    public Order(Unit parentUnit, OrderType orderType, Province provinceSlot1, Province provinceSlot2, boolean viaConvoy) {
+    public Order(Unit parentUnit, ORDER_TYPE orderType, PROVINCE provinceSlot1, PROVINCE provinceSlot2, boolean viaConvoy) {
         this(parentUnit, orderType, provinceSlot1, provinceSlot2);
         this.viaConvoy = viaConvoy;
     }
 
-    public Order(Unit parentUnit, OrderType orderType, Province provinceSlot1, Province provinceSlot2) {
+    public Order(Unit parentUnit, ORDER_TYPE orderType, PROVINCE provinceSlot1, PROVINCE provinceSlot2) {
         this.parentUnit = parentUnit;
         this.orderType = orderType;
         this.pr1 = provinceSlot1;
@@ -112,7 +112,7 @@ public class Order {
 
     public Order(Unit parentUnit) {  // NMR
         this.parentUnit = parentUnit;
-        this.orderType = OrderType.NONE;
+        this.orderType = ORDER_TYPE.NONE;
         this.pr1 = parentUnit.getPosition();
         this.pr2 = parentUnit.getPosition();
         this.dislodged = false;
@@ -121,19 +121,19 @@ public class Order {
 
     public String toString() {
         String output = parentUnit.toString();
-        if (orderType == OrderType.MOVE) {
-            output += " -> " + pr1.name();  // .getName() would return the Province's full name
-        } else if (orderType == OrderType.HOLD) {
+        if (orderType == ORDER_TYPE.MOVE) {
+            output += " -> " + pr1.name();  // .getName() would return the PROVINCE's full name
+        } else if (orderType == ORDER_TYPE.HOLD) {
             output += " H ";
-        } else if (orderType == OrderType.SUPPORT) {
+        } else if (orderType == ORDER_TYPE.SUPPORT) {
             output += " S " + pr1.name() + " ";
             if (pr1.equals(pr2))
                 output += "H";
             else
                 output += "-> " + pr2.name();
-        } else if (orderType == OrderType.CONVOY) {
+        } else if (orderType == ORDER_TYPE.CONVOY) {
             output += " C " + pr1.name() + " -> " + pr2.name();
-        } else if (orderType == OrderType.VOID) {
+        } else if (orderType == ORDER_TYPE.VOID) {
             output += " VOID";
         } else {
             output += " NMR";

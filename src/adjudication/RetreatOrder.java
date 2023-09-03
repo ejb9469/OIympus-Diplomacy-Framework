@@ -7,20 +7,20 @@ public class RetreatOrder extends Order {
         this.dislodged = true;
     }
 
-    public RetreatOrder(Unit parentUnit, Province pr1) {
+    public RetreatOrder(Unit parentUnit, PROVINCE pr1) {
         this(parentUnit);
         if (pr1 == null)
-            this.orderType = OrderType.REMOVE;
+            this.orderType = ORDER_TYPE.REMOVE;
         else
-            this.orderType = OrderType.RETREAT;
+            this.orderType = ORDER_TYPE.RETREAT;
         this.pr1 = pr1;
     }
 
     public String toString() {
         String output = parentUnit.toString();
-        if (orderType == OrderType.REMOVE)
+        if (orderType == ORDER_TYPE.REMOVE)
             return output + " REMOVE";
-        else if (orderType == OrderType.RETREAT)
+        else if (orderType == ORDER_TYPE.RETREAT)
             return output + " -> " + pr1.name();
         return super.toString();
     }

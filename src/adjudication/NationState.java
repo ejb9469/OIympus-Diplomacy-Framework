@@ -9,13 +9,13 @@ import java.util.Set;
 
 public class NationState {  // This is an unintentional pun
 
-    private Nation nation;
+    private NATION nation;
 
     private boolean dead;
 
-    private List<Province> supplyCenters;  // Is a list (not a set) to show relative order of acquisition
-    private List<List<Province>> supplyHistory;
-    private final List<Province> homeSupplyCenters;
+    private List<PROVINCE> supplyCenters;  // Is a list (not a set) to show relative order of acquisition
+    private List<List<PROVINCE>> supplyHistory;
+    private final List<PROVINCE> homeSupplyCenters;
 
     private List<Unit> units;
     private List<List<Unit>> unitHistory;
@@ -23,11 +23,11 @@ public class NationState {  // This is an unintentional pun
     private boolean drawFlag = false;
     private boolean civilDisorder = false;
     private int drawNumberCondition = 1;  // By default, all players accept a solo only
-    private Set<Nation> drawPartyCondition = null;  // Keep the null assignments in mind
-    private Map<Nation, int[]> drawSCCondition = null;  // int[] in the format: { (less than / equal to / greater than), count) }
+    private Set<NATION> drawPartyCondition = null;  // Keep the null assignments in mind
+    private Map<NATION, int[]> drawSCCondition = null;  // int[] in the format: { (less than / equal to / greater than), count) }
 
-    public void updateSupplyCenters(List<Province> swappedCenters) {
-        for (Province center : swappedCenters) {
+    public void updateSupplyCenters(List<PROVINCE> swappedCenters) {
+        for (PROVINCE center : swappedCenters) {
             if (supplyCenters.contains(center)) {
                 supplyCenters.remove(center);
             } else {
@@ -51,7 +51,7 @@ public class NationState {  // This is an unintentional pun
                 drawFlag = true;
             } else if (drawSCCondition != null) {
                 boolean accept = true;
-                for (Nation nation : drawSCCondition.keySet()) {
+                for (NATION nation : drawSCCondition.keySet()) {
                     int[] nationSCCondition = drawSCCondition.get(nation);
                     if (nationSCCondition[0] == -1) {  // Less than or equal to
                         if (GameState.supplyCounts.get(nation) > nationSCCondition[1])
@@ -81,7 +81,7 @@ public class NationState {  // This is an unintentional pun
         return civilDisorder;
     }
 
-    public Nation getNation() {
+    public NATION getNation() {
         return nation;
     }
 
@@ -89,15 +89,15 @@ public class NationState {  // This is an unintentional pun
         return supplyCenters.size();
     }
 
-    public List<List<Province>> getSupplyHistory() {
+    public List<List<PROVINCE>> getSupplyHistory() {
         return supplyHistory;
     }
 
-    public List<Province> getSupplyCenters() {
+    public List<PROVINCE> getSupplyCenters() {
         return supplyCenters;
     }
 
-    public List<Province> getHomeSupplyCenters() {
+    public List<PROVINCE> getHomeSupplyCenters() {
         return homeSupplyCenters;
     }
 
@@ -118,11 +118,11 @@ public class NationState {  // This is an unintentional pun
         return drawNumberCondition;
     }
 
-    public Set<Nation> getDrawPartyCondition() {
+    public Set<NATION> getDrawPartyCondition() {
         return drawPartyCondition;
     }
 
-    public Map<Nation, int[]> getDrawSCCondition() {
+    public Map<NATION, int[]> getDrawSCCondition() {
         return drawSCCondition;
     }
 
@@ -144,11 +144,11 @@ public class NationState {  // This is an unintentional pun
         this.drawNumberCondition = drawNumberCondition;
     }
 
-    public void setDrawPartyCondition(Set<Nation> drawPartyCondition) {
+    public void setDrawPartyCondition(Set<NATION> drawPartyCondition) {
         this.drawPartyCondition = drawPartyCondition;
     }
 
-    public void setDrawSCCondition(Map<Nation, int[]> drawSCCondition) {
+    public void setDrawSCCondition(Map<NATION, int[]> drawSCCondition) {
         this.drawSCCondition = drawSCCondition;
     }
 
@@ -159,64 +159,64 @@ public class NationState {  // This is an unintentional pun
         }
     }
 
-    public NationState(Nation nation) {
+    public NationState(NATION nation) {
         this.nation = nation;
         units = new ArrayList<>();
         unitHistory = new ArrayList<>();
         homeSupplyCenters = new ArrayList<>();
         supplyCenters = new ArrayList<>();
         supplyHistory = new ArrayList<>();
-        if (nation == Nation.ENGLAND) {
-            homeSupplyCenters.add(Province.Lon);
-            homeSupplyCenters.add(Province.Lvp);
-            homeSupplyCenters.add(Province.Edi);
-            units.add(new Unit(nation, Province.Lon, 1));
-            units.add(new Unit(nation, Province.Lvp, 0));
-            units.add(new Unit(nation, Province.Edi, 1));
-        } else if (nation == Nation.FRANCE) {
-            homeSupplyCenters.add(Province.Par);
-            homeSupplyCenters.add(Province.Bre);
-            homeSupplyCenters.add(Province.Mar);
-            units.add(new Unit(nation, Province.Par, 0));
-            units.add(new Unit(nation, Province.Bre, 1));
-            units.add(new Unit(nation, Province.Mar, 0));
-        } else if (nation == Nation.GERMANY) {
-            homeSupplyCenters.add(Province.Ber);
-            homeSupplyCenters.add(Province.Mun);
-            homeSupplyCenters.add(Province.Kie);
-            units.add(new Unit(nation, Province.Ber, 0));
-            units.add(new Unit(nation, Province.Mun, 0));
-            units.add(new Unit(nation, Province.Kie, 1));
-        } else if (nation == Nation.ITALY) {
-            homeSupplyCenters.add(Province.Rom);
-            homeSupplyCenters.add(Province.Ven);
-            homeSupplyCenters.add(Province.Nap);
-            units.add(new Unit(nation, Province.Rom, 0));
-            units.add(new Unit(nation, Province.Ven, 0));
-            units.add(new Unit(nation, Province.Nap, 1));
-        } else if (nation == Nation.AUSTRIA) {
-            homeSupplyCenters.add(Province.Vie);
-            homeSupplyCenters.add(Province.Bud);
-            homeSupplyCenters.add(Province.Tri);
-            units.add(new Unit(nation, Province.Vie, 0));
-            units.add(new Unit(nation, Province.Bud, 0));
-            units.add(new Unit(nation, Province.Tri,1));
-        } else if (nation == Nation.RUSSIA) {
-            homeSupplyCenters.add(Province.Mos);
-            homeSupplyCenters.add(Province.Stp);
-            homeSupplyCenters.add(Province.War);
-            homeSupplyCenters.add(Province.Sev);
-            units.add(new Unit(nation, Province.Mos, 0));
-            units.add(new Unit(nation, Province.Stp, 1));  // TODO: Update to south coast
-            units.add(new Unit(nation, Province.War, 0));
-            units.add(new Unit(nation, Province.Sev, 0));
-        } else if (nation == Nation.TURKEY) {
-            homeSupplyCenters.add(Province.Con);
-            homeSupplyCenters.add(Province.Ank);
-            homeSupplyCenters.add(Province.Smy);
-            units.add(new Unit(nation, Province.Con, 0));
-            units.add(new Unit(nation, Province.Ank, 1));
-            units.add(new Unit(nation, Province.Smy, 0));
+        if (nation == NATION.ENGLAND) {
+            homeSupplyCenters.add(PROVINCE.Lon);
+            homeSupplyCenters.add(PROVINCE.Lvp);
+            homeSupplyCenters.add(PROVINCE.Edi);
+            units.add(new Unit(nation, PROVINCE.Lon, 1));
+            units.add(new Unit(nation, PROVINCE.Lvp, 0));
+            units.add(new Unit(nation, PROVINCE.Edi, 1));
+        } else if (nation == NATION.FRANCE) {
+            homeSupplyCenters.add(PROVINCE.Par);
+            homeSupplyCenters.add(PROVINCE.Bre);
+            homeSupplyCenters.add(PROVINCE.Mar);
+            units.add(new Unit(nation, PROVINCE.Par, 0));
+            units.add(new Unit(nation, PROVINCE.Bre, 1));
+            units.add(new Unit(nation, PROVINCE.Mar, 0));
+        } else if (nation == NATION.GERMANY) {
+            homeSupplyCenters.add(PROVINCE.Ber);
+            homeSupplyCenters.add(PROVINCE.Mun);
+            homeSupplyCenters.add(PROVINCE.Kie);
+            units.add(new Unit(nation, PROVINCE.Ber, 0));
+            units.add(new Unit(nation, PROVINCE.Mun, 0));
+            units.add(new Unit(nation, PROVINCE.Kie, 1));
+        } else if (nation == NATION.ITALY) {
+            homeSupplyCenters.add(PROVINCE.Rom);
+            homeSupplyCenters.add(PROVINCE.Ven);
+            homeSupplyCenters.add(PROVINCE.Nap);
+            units.add(new Unit(nation, PROVINCE.Rom, 0));
+            units.add(new Unit(nation, PROVINCE.Ven, 0));
+            units.add(new Unit(nation, PROVINCE.Nap, 1));
+        } else if (nation == NATION.AUSTRIA) {
+            homeSupplyCenters.add(PROVINCE.Vie);
+            homeSupplyCenters.add(PROVINCE.Bud);
+            homeSupplyCenters.add(PROVINCE.Tri);
+            units.add(new Unit(nation, PROVINCE.Vie, 0));
+            units.add(new Unit(nation, PROVINCE.Bud, 0));
+            units.add(new Unit(nation, PROVINCE.Tri,1));
+        } else if (nation == NATION.RUSSIA) {
+            homeSupplyCenters.add(PROVINCE.Mos);
+            homeSupplyCenters.add(PROVINCE.Stp);
+            homeSupplyCenters.add(PROVINCE.War);
+            homeSupplyCenters.add(PROVINCE.Sev);
+            units.add(new Unit(nation, PROVINCE.Mos, 0));
+            units.add(new Unit(nation, PROVINCE.Stp, 1));  // TODO: Update to south coast
+            units.add(new Unit(nation, PROVINCE.War, 0));
+            units.add(new Unit(nation, PROVINCE.Sev, 0));
+        } else if (nation == NATION.TURKEY) {
+            homeSupplyCenters.add(PROVINCE.Con);
+            homeSupplyCenters.add(PROVINCE.Ank);
+            homeSupplyCenters.add(PROVINCE.Smy);
+            units.add(new Unit(nation, PROVINCE.Con, 0));
+            units.add(new Unit(nation, PROVINCE.Ank, 1));
+            units.add(new Unit(nation, PROVINCE.Smy, 0));
         }
         supplyCenters.addAll(homeSupplyCenters);
         supplyHistory.add(supplyCenters);

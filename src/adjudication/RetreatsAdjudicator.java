@@ -16,9 +16,9 @@ public class RetreatsAdjudicator {
 
     public void resolve() {
         List<RetreatOrder> orders = new ArrayList<>(ordersList);
-        Set<Province> clashes = new HashSet<>();
+        Set<PROVINCE> clashes = new HashSet<>();
         for (RetreatOrder order : orders) {
-            if (order.orderType != OrderType.RETREAT) {
+            if (order.orderType != ORDER_TYPE.RETREAT) {
                 order.deleteMe = true;
                 continue;
             }
@@ -30,7 +30,7 @@ public class RetreatsAdjudicator {
                 order.deleteMe = true;
             } else {
                 for (RetreatOrder order2 : orders) {
-                    if (order2.orderType != OrderType.RETREAT) continue;
+                    if (order2.orderType != ORDER_TYPE.RETREAT) continue;
                     if (order.pr1 == order2.pr1 && order2.parentUnit.getPossibleRetreats().contains(order2.pr1)) {
                         clashes.add(order.pr1);
                         order.deleteMe = true;

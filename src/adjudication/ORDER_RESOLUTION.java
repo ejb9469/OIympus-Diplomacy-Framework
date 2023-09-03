@@ -1,12 +1,12 @@
 package adjudication;
 
-public enum OrderResolution {
+public enum ORDER_RESOLUTION {
 
     FAILS((byte)0),
     SUCCEEDS((byte)1),
     UNRESOLVED((byte)2);
 
-    OrderResolution(byte resolution) {
+    ORDER_RESOLUTION(byte resolution) {
     }
 
 }

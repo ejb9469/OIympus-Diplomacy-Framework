@@ -1,5 +1,7 @@
 package indexing;
 
+import adjudication.END_CONDITION;
+
 import java.util.Arrays;
 
 public class SevenTagRoster {
@@ -8,9 +10,9 @@ public class SevenTagRoster {
     private int round;
     private PlayerID[] players;
     private PlayerID[] winners;
-    private EndCondition endCondition;
+    private END_CONDITION endCondition;
 
-    public SevenTagRoster(Event event, int round, PlayerID[] players, PlayerID[] winners, EndCondition endCondition) {
+    public SevenTagRoster(Event event, int round, PlayerID[] players, PlayerID[] winners, END_CONDITION endCondition) {
         this.event = event;
         this.round = round;
         this.players = players;

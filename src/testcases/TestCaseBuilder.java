@@ -1,7 +1,7 @@
 package testcases;
 
 import adjudication.Order;
-import adjudication.Province;
+import adjudication.PROVINCE;
 import adjudication.Unit;
 import exceptions.BadOrderException;
 
@@ -38,7 +38,7 @@ public class TestCaseBuilder {
                 if (orderText.isBlank()) continue;
                 if (orderText.contains(".ec") || orderText.contains(".nc") || orderText.contains(".sc")) break;  // TODO: Ignore coasts for now
                 if (!abbreviated) {
-                    Map<String, String> fullNamesToAbbrsMap = Province.generateFullNamesToAbbreviationsMap();
+                    Map<String, String> fullNamesToAbbrsMap = PROVINCE.generateFullNamesToAbbreviationsMap();
                     for (String fullName : fullNamesToAbbrsMap.keySet()) {
                         if (orderText.contains(fullName)) {
                             orderText = orderText.replaceAll(fullName, fullNamesToAbbrsMap.get(fullName));
@@ -57,7 +57,7 @@ public class TestCaseBuilder {
                 boolean retreat = retreatStr.strip().equalsIgnoreCase("y");
                 order.parentUnit.testCaseRetreat = retreat;
                 if (retreat) expectedUnitsWithRetreats.add(order.parentUnit);
-                Province province = Province.valueOf(provinceStr.strip());
+                PROVINCE province = PROVINCE.valueOf(provinceStr.strip());
                 Unit expectedUnit = new Unit(order.parentUnit.getParentNation(), province, order.parentUnit.getUnitType());
                 expected.add(expectedUnit);
             }

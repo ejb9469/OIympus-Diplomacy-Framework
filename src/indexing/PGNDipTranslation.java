@@ -24,20 +24,20 @@ public class PGNDipTranslation implements MovetextTranslator {
                 String orderStr = orderStrings[i];
 
                 String[] orderDetails = orderStr.split("\\s+");  // Splits on whitespace
-                Nation nation = Nation.valueOf(orderDetails[0]);
+                NATION nation = NATION.valueOf(orderDetails[0]);
                 int unitType;
                 if (orderDetails[1].equalsIgnoreCase("F"))
                     unitType = 1;
                 else
                     unitType = 0;
-                Province pr1 = Province.valueOf(orderDetails[2]);
-                OrderType orderType = OrderType.fromAbbr(orderDetails[3].toUpperCase());
+                PROVINCE pr1 = PROVINCE.valueOf(orderDetails[2]);
+                ORDER_TYPE orderType = ORDER_TYPE.fromAbbr(orderDetails[3].toUpperCase());
 
                 Unit unit = new Unit(nation, pr1, unitType);
                 Order order;
-                if (orderType == OrderType.SUPPORT || orderType == OrderType.CONVOY) {
+                if (orderType == ORDER_TYPE.SUPPORT || orderType == ORDER_TYPE.CONVOY) {
                     boolean viaConvoy = orderDetails[orderDetails.length - 2].equals("VIA") && orderDetails[orderDetails.length - 1].equals("CONVOY");
-                    Province pr2 = Province.valueOf(orderDetails[4]);
+                    PROVINCE pr2 = PROVINCE.valueOf(orderDetails[4]);
                     order = new Order(unit, orderType, pr1, pr2, viaConvoy);
                 } else {
                     order = new Order(unit, orderType, pr1, pr1);

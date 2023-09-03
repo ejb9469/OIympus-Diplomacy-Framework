@@ -1,6 +1,6 @@
 package adjudication;
 
-public enum OrderType {
+public enum ORDER_TYPE {
 
     NONE,
     VOID,
@@ -12,7 +12,7 @@ public enum OrderType {
     REMOVE,
     RETREAT;
 
-    public static OrderType fromAbbr(String abbreviation) {
+    public static ORDER_TYPE fromAbbr(String abbreviation) {
         return switch (abbreviation) {
             case "H" -> HOLD;
             case "-" -> MOVE;

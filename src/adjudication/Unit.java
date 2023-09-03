@@ -4,8 +4,8 @@ import java.util.*;
 
 public class Unit {
 
-    private Nation parentNation;
-    private Province position;
+    private NATION parentNation;
+    private PROVINCE position;
     private int unitType;  // 0 for army, 1 for fleet
 
     // The fun properties - track where units have been throughout the game
@@ -15,16 +15,16 @@ public class Unit {
     private List<Order> orderHistory;
 
     private Order actingOrder;
-    private List<Province> possibleRetreats = new ArrayList<>();
+    private List<PROVINCE> possibleRetreats = new ArrayList<>();
 
     // This field is only for test cases
     public boolean testCaseRetreat = false;
 
-    public void populateRetreatsList(Province attackOrigin, Collection<Unit> units) {
-        Set<Province> occupiedProvinces = new HashSet<>();  // Sets cannot contain duplicates
+    public void populateRetreatsList(PROVINCE attackOrigin, Collection<Unit> units) {
+        Set<PROVINCE> occupiedProvinces = new HashSet<>();  // Sets cannot contain duplicates
         for (Unit unit : units)
             occupiedProvinces.add(unit.getPosition());
-        for (Province province : Province.values()) {
+        for (PROVINCE province : PROVINCE.values()) {
             if (province != position && province.isAdjacentTo(position) && province != attackOrigin && !occupiedProvinces.contains(province)) {
                 if ((unitType == 0 && province.isWater()) || (unitType == 1 && !province.isCoastal() && !province.isWater())) continue;
                 possibleRetreats.add(province);
@@ -36,7 +36,7 @@ public class Unit {
         possibleRetreats = new ArrayList<>();
     }
 
-    public List<Province> getPossibleRetreats() {
+    public List<PROVINCE> getPossibleRetreats() {
         return possibleRetreats;
     }
 
@@ -61,11 +61,11 @@ public class Unit {
         return unitType;
     }
 
-    public Province getPosition() {
+    public PROVINCE getPosition() {
         return position;
     }
 
-    public void setPosition(Province position) {
+    public void setPosition(PROVINCE position) {
         this.position = position;
     }
 
@@ -73,7 +73,7 @@ public class Unit {
         return actingOrder;
     }
 
-    public Nation getParentNation() {
+    public NATION getParentNation() {
         return parentNation;
     }
 
@@ -81,7 +81,7 @@ public class Unit {
         return orderHistory;
     }
 
-    public Unit(Nation parentNation, Province position, int unitType) {
+    public Unit(NATION parentNation, PROVINCE position, int unitType) {
         this.parentNation = parentNation;
         this.position = position;
         this.unitType = unitType;

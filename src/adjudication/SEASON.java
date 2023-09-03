@@ -1,6 +1,6 @@
 package adjudication;
 
-public enum Season {
+public enum SEASON {
     SPRING,
     FALL,
     WINTER

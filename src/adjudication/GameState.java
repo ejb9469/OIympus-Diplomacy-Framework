@@ -13,18 +13,18 @@ public class GameState implements Runnable {
     public static final boolean SHOW_NUM_DRAW_REJECTORS = true;
 
     static boolean gameOver = false;
-    static EndCondition endCondition = EndCondition.ACTIVE;
+    static END_CONDITION endCondition = END_CONDITION.ACTIVE;
     static List<NationState> survivingParties = null;
 
     static int gameYear = 1900;
-    static Season season = Season.WINTER;
+    static SEASON season = SEASON.WINTER;
     static boolean retreats = false;
 
     static Set<NationState> nationStates = new HashSet<>();
-    // Note: "dip.Nation State" refers to the state of each country, not the political term
+    // Note: "dip.NATION State" refers to the state of each country, not the political term
 
-    static Map<Unit, Province> boardState = new HashMap<>();
-    static Map<Nation, Integer> supplyCounts = new HashMap<>();
+    static Map<Unit, PROVINCE> boardState = new HashMap<>();
+    static Map<NATION, Integer> supplyCounts = new HashMap<>();
 
     static Set<Set<NationState>> drawHistory = new HashSet<>();
 
@@ -104,10 +104,10 @@ public class GameState implements Runnable {
     /**
      * dip.GameState.nations() should be always be used in all cases, for posterity's sake
      *
-     * @return A HashSet of all dip.NationState objects' dip.Nation Enums
+     * @return A HashSet of all dip.NationState objects' dip.NATION Enums
      */
-    public static HashSet<Nation> nations() {
-        HashSet<Nation> nations = new HashSet<>();
+    public static HashSet<NATION> nations() {
+        HashSet<NATION> nations = new HashSet<>();
         for (NationState nationState : nationStates)
             nations.add(nationState.getNation());
         return nations;
@@ -115,11 +115,11 @@ public class GameState implements Runnable {
 
     /**
      * Sub-method of checkEndStates()
-     * @return True if the size of the dip.Nation's states is 0, else false
+     * @return True if the size of the dip.NATION's states is 0, else false
      */
     static boolean abandonedProcedure() {
         if (nationStates.size() == 0) {
-            endCondition = EndCondition.ABANDONMENT;
+            endCondition = END_CONDITION.ABANDONMENT;
             System.out.println("Game ABANDONED.");
             return true;
         }
@@ -135,15 +135,15 @@ public class GameState implements Runnable {
 
         // TIMEOUT
         if (gameYear > YEAR_CONTROL) {
-            endCondition = EndCondition.TIMEOUT;
+            endCondition = END_CONDITION.TIMEOUT;
             System.out.println("The game has completed its final year of " + YEAR_CONTROL + ", ending the game in TIMEOUT.");
             return true;
         }
 
         // SOLO
-        for (Nation nation : nations()) {
+        for (NATION nation : nations()) {
             if (supplyCounts.get(nation) >= 18) {
-                endCondition = EndCondition.SOLO;
+                endCondition = END_CONDITION.SOLO;
                 System.out.println(nation.name() + " has achieved a SOLO!");
                 return true;
             }
@@ -166,7 +166,7 @@ public class GameState implements Runnable {
             nationStates.clear();
             return abandonedProcedure();  // alternative to goto
         } else if (massSurrender) {
-            endCondition = EndCondition.CONCESSION;
+            endCondition = END_CONDITION.CONCESSION;
             System.out.println("All remaining players have CONCEDED to " + potentialVictor.getNation().name());
             return true;
         }
@@ -175,7 +175,7 @@ public class GameState implements Runnable {
         Set<NationState> drawRejectors = peaceConference();
         drawHistory.add(drawRejectors);
         if (drawRejectors.size() == 0) {
-            endCondition = EndCondition.DRAW;
+            endCondition = END_CONDITION.DRAW;
             System.out.println("DRAW accepted.");
             return true;
         } else {
@@ -191,13 +191,13 @@ public class GameState implements Runnable {
     }
 
     private static void setup() {
-        nationStates.add(new NationState(Nation.ENGLAND));
-        nationStates.add(new NationState(Nation.FRANCE));
-        nationStates.add(new NationState(Nation.GERMANY));
-        nationStates.add(new NationState(Nation.ITALY));
-        nationStates.add(new NationState(Nation.AUSTRIA));
-        nationStates.add(new NationState(Nation.RUSSIA));
-        nationStates.add(new NationState(Nation.TURKEY));
+        nationStates.add(new NationState(NATION.ENGLAND));
+        nationStates.add(new NationState(NATION.FRANCE));
+        nationStates.add(new NationState(NATION.GERMANY));
+        nationStates.add(new NationState(NATION.ITALY));
+        nationStates.add(new NationState(NATION.AUSTRIA));
+        nationStates.add(new NationState(NATION.RUSSIA));
+        nationStates.add(new NationState(NATION.TURKEY));
 
         survivingParties.addAll(nationStates);
 
@@ -215,7 +215,7 @@ public class GameState implements Runnable {
 
     private static void cleanup() {
         survivingParties = new ArrayList<>();
-        if (endCondition == EndCondition.SOLO) {
+        if (endCondition == END_CONDITION.SOLO) {
             // TODO
         }
     }
@@ -249,12 +249,12 @@ public class GameState implements Runnable {
         } else if (retreats) {
             retreats = false;
         }
-        if (season == Season.SPRING) {
-            season = Season.FALL;
-        } else if (season == Season.FALL) {
-            season = Season.WINTER;
-        } else /*if (season == dip.Season.WINTER)*/ {
-            season = Season.SPRING;
+        if (season == SEASON.SPRING) {
+            season = SEASON.FALL;
+        } else if (season == SEASON.FALL) {
+            season = SEASON.WINTER;
+        } else /*if (season == dip.SEASON.WINTER)*/ {
+            season = SEASON.SPRING;
             gameYear++;
         }
     }
@@ -279,8 +279,8 @@ public class GameState implements Runnable {
 
         // Update units; shed orders
         List<Order> updatedOrders = adjudicator.getOrders();
-        Map<Nation, List<Unit>> nationsUnits = new HashMap<>();
-        for (Nation nation : nations())
+        Map<NATION, List<Unit>> nationsUnits = new HashMap<>();
+        for (NATION nation : nations())
             nationsUnits.put(nation, new ArrayList<>());
         for (Order order : updatedOrders) {
             retreatsNeeded = retreatsNeeded || order.dislodged;
@@ -299,13 +299,13 @@ public class GameState implements Runnable {
     }
 
     /**
-     * @return The dip.Season + Year abbreviation - e.g. "F01"
+     * @return The dip.SEASON + Year abbreviation - e.g. "F01"
      */
     public static String tag() {
         String tag = "";
-        if (season == Season.SPRING)
+        if (season == SEASON.SPRING)
             tag += "S";
-        else if (season == Season.FALL)
+        else if (season == SEASON.FALL)
             tag += "F";
         else /*if (season == season.WINTER)*/
             tag += "W";

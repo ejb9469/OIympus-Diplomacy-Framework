@@ -1,6 +1,6 @@
 package adjudication;
 
-public enum Nation {
+public enum NATION {
 
     ENGLAND("English"),
     FRANCE("French"),
@@ -16,7 +16,7 @@ public enum Nation {
         return adjective;
     }
 
-    private Nation(String adjective) {
+    private NATION(String adjective) {
         this.adjective = adjective;
     }
 

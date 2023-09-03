@@ -1,6 +1,6 @@
 package adjudication;
 
-public enum EndCondition {
+public enum END_CONDITION {
     ACTIVE,
     SOLO,
     DRAW,
