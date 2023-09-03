@@ -1,6 +1,6 @@
 package adjudication;
 
-import adjudication.exceptions.BadOrderException;
+import exceptions.BadOrderException;
 
 import java.io.FileWriter;
 import java.util.*;
@@ -15,7 +15,7 @@ public class Adjudicator implements Runnable {
         return ordersList;
     }
 
-    Adjudicator(List<Order> ordersList) {
+    public Adjudicator(List<Order> ordersList) {
         this.ordersList = ordersList;
     }
 

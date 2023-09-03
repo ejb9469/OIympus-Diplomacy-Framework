@@ -1,6 +1,6 @@
 package adjudication;
 
-import adjudication.exceptions.UnitMismatchException;
+import exceptions.UnitMismatchException;
 
 import java.util.ArrayList;
 import java.util.List;

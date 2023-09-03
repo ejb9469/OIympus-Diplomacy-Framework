@@ -24,7 +24,7 @@ public class Movetext {
     }
 
     public void append(String moveText) {
-
+        ordersList.addAll(moveTextTranslator.parseStringToOrders(moveText));
     }
 
     @Override

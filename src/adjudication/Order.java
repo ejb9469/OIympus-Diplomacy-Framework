@@ -1,37 +1,37 @@
 package adjudication;
 
-import adjudication.exceptions.BadOrderException;
+import exceptions.BadOrderException;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class Order {
 
-    Unit parentUnit;
-    OrderType orderType;  // -1 = NMR, 0 = hold, 1 = move, 2 = support, 3 = convoy
-    Province pr1;
-    Province pr2;
-    boolean viaConvoy = false;
+    public Unit parentUnit;
+    public OrderType orderType;  // -1 = NMR, 0 = hold, 1 = move, 2 = support, 3 = convoy
+    public Province pr1;
+    public Province pr2;
+    public boolean viaConvoy = false;
 
-    boolean deleteMe = false;
+    public boolean deleteMe = false;
 
-    Province prInitial;
+    public Province prInitial;
 
     // Retreat flags
-    boolean dislodged;
+    public boolean dislodged;
 
     // Move flags
-    boolean bounce = false;
+    public boolean bounce = false;
 
     // Convoy flags
-    boolean convoyEndangered = false;
-    boolean convoyAttacked = false;
-    boolean noConvoy = false;
+    public boolean convoyEndangered = false;
+    public boolean convoyAttacked = false;
+    public boolean noConvoy = false;
 
     // Support flags
-    boolean cut = false;
+    public boolean cut = false;
     // List of Orders that this order cannot receive support from under certain circumstances, most notably same-power support
-    List<Order> noHelpList = new ArrayList<>();
+    public List<Order> noHelpList = new ArrayList<>();
 
     public static Order parseUnit(String lingo) throws BadOrderException {
 

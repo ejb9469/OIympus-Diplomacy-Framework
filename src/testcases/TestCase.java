@@ -1,4 +1,8 @@
-package adjudication;
+package testcases;
+
+import adjudication.Adjudicator;
+import adjudication.Order;
+import adjudication.Unit;
 
 import java.util.*;
 

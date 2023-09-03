@@ -57,6 +57,15 @@ public class PGNDipTranslation implements MovetextTranslator {
 
     @Override
     public String parseOrdersToString(List<Order[]> ordersList) {
+        StringBuilder finalStr = new StringBuilder();
+        for (Order[] orders : ordersList) {
+            StringBuilder turnStr = new StringBuilder();
+            for (Order order : orders)
+                turnStr.append(order.toString()).append("\n");
+            turnStr.append("---\n");
+            finalStr.append(turnStr);
+        }
+        return finalStr.toString();
     }
 
     @Override

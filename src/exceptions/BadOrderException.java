@@ -1,4 +1,4 @@
-package adjudication.exceptions;
+package exceptions;
 
 /**
  * Exception generated for inputting an improperly-formatted order - NOT an invalid order.

@@ -1,6 +1,9 @@
-package adjudication;
+package testcases;
 
-import adjudication.exceptions.BadOrderException;
+import adjudication.Order;
+import adjudication.Province;
+import adjudication.Unit;
+import exceptions.BadOrderException;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,7 +16,7 @@ public class TestCaseBuilder {
 
     public static void main(String[] args) throws IOException, BadOrderException, IllegalArgumentException {
         // Grab list of test case files
-        File testCasesFolder = new File("src/dip/testcases/run");
+        File testCasesFolder = new File("src/testcases/testgames/run");
         File[] testCaseFiles = testCasesFolder.listFiles();
         if (testCaseFiles == null) throw new IOException();
         if (testCaseFiles.length == 0) return;
