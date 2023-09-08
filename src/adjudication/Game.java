@@ -2,7 +2,7 @@ package adjudication;
 
 import java.util.*;
 
-public class GameState implements Runnable {
+public class Game implements Runnable {
 
     public static final int TIME_CONTROL = 5 * 60;  // Measured in seconds per phase
     public static final int YEAR_CONTROL = 1908;  // Measured in game years
@@ -28,7 +28,7 @@ public class GameState implements Runnable {
 
     static Set<Set<NationState>> drawHistory = new HashSet<>();
 
-    private GameState() {}  // Empty constructor for Singleton use
+    private Game() {}  // Empty constructor for Singleton use
 
     public void run() {
         // Check & clear game status (are we ending?)
@@ -84,7 +84,7 @@ public class GameState implements Runnable {
         //////////////////////////////
         //// == GAMEPLAY LOOP == /////
         //////////////////////////////
-        (new Thread(new GameState())).start();  // Auto-runs dip.GameState.run();
+        (new Thread(new Game())).start();  // Auto-runs dip.Game.run();
         //////////////////////////////
         //// === GAME END OPS === ////
         //////////////////////////////
@@ -93,7 +93,7 @@ public class GameState implements Runnable {
     }
 
     /**
-     * dip.GameState.getNationStates() should always be used in all cases, for posterity's sake
+     * dip.Game.getNationStates() should always be used in all cases, for posterity's sake
      *
      * @return A Set of all dip.NationState objects
      */
@@ -102,7 +102,7 @@ public class GameState implements Runnable {
     }
 
     /**
-     * dip.GameState.nations() should be always be used in all cases, for posterity's sake
+     * dip.Game.nations() should be always be used in all cases, for posterity's sake
      *
      * @return A HashSet of all dip.NationState objects' dip.NATION Enums
      */
@@ -117,7 +117,7 @@ public class GameState implements Runnable {
      * Sub-method of checkEndStates()
      * @return True if the size of the dip.NATION's states is 0, else false
      */
-    static boolean abandonedProcedure() {
+    private static boolean abandonedProcedure() {
         if (nationStates.size() == 0) {
             endCondition = END_CONDITION.ABANDONMENT;
             System.out.println("Game ABANDONED.");
@@ -126,7 +126,7 @@ public class GameState implements Runnable {
         return false;
     }
 
-    static boolean checkEndStates() {
+    public static boolean checkEndStates() {
 
         // ABANDONMENT
         if (abandonedProcedure()) {

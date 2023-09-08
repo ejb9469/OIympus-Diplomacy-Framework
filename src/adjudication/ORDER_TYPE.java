@@ -13,7 +13,7 @@ public enum ORDER_TYPE {
     RETREAT;
 
     public static ORDER_TYPE fromAbbr(String abbreviation) {
-        return switch (abbreviation) {
+        return switch (abbreviation.toUpperCase()) {  // Case-insensitive
             case "H" -> HOLD;
             case "-" -> MOVE;
             case "S" -> SUPPORT;

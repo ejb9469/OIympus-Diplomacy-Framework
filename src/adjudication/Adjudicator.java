@@ -60,7 +60,7 @@ public class Adjudicator implements Runnable {
             sc.close();
             new Adjudicator(orders).resolve();
         } else if (INPUT_MODE == 2) {  // Test cases
-            File testCaseFolder = new File("src/dip/testcases");
+            File testCaseFolder = new File("src/testcases/testgames/");
             File[] testCaseFiles = testCaseFolder.listFiles();
             if (testCaseFiles == null) throw new IOException();
             if (testCaseFiles.length == 0) return;
@@ -72,11 +72,11 @@ public class Adjudicator implements Runnable {
             Scanner sc;
             for (File testCaseFile : testCaseFiles) {
                 if (!testCaseFile.isFile()) continue;
-                File file = new File("src/dip/testcases/results/OUT_" + testCaseFile.getName());
+                File file = new File("src/testcases/testgames/results/OUT_" + testCaseFile.getName());
                 file.createNewFile();
                 currentFileWriter = new FileWriter(file.getAbsolutePath());
                 tabsCounter = 0;
-                if (!testCaseFile.getName().contains("BACKSTABBR NEXUS") || !testCaseFile.getName().contains("1902")) continue;
+                if (!testCaseFile.getName().contains("BACKSTABBR NEXUS")) continue;
                 System.out.println(testCaseFile.getName() + "\n");
                 currentFileWriter.write(testCaseFile.getName() + "\n\n");
                 orders = new ArrayList<>();

@@ -85,7 +85,7 @@ public class Unit {
         this.parentNation = parentNation;
         this.position = position;
         this.unitType = unitType;
-        this.birthYear = GameState.gameYear;
+        this.birthYear = Game.gameYear;
         this.uniqueID = uniqueIDIncrement++;
         this.orderHistory = new ArrayList<>();
     }

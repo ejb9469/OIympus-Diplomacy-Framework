@@ -1,0 +1,40 @@
+AUSTRIA A Bud - Gal
+AUSTRIA F Gre S Rum - Bul
+AUSTRIA A Rum - Bul
+AUSTRIA A Ser S Rum - Bul
+
+ENGLAND F NAO - MAO
+ENGLAND F NTH - Edi
+ENGLAND F NWG - Cly
+ENGLAND A Swe H
+
+FRANCE F Bel - ENG
+FRANCE F Bre - MAO
+FRANCE A Bur H
+FRANCE F Lvp H
+FRANCE A Pic S Bur H
+FRANCE A Yor - Lon
+
+GERMANY A Ber S Mun - Sil
+GERMANY F Den H
+GERMANY A Hol - Bel
+GERMANY A Kie S Ber H
+GERMANY A Mun - Sil
+GERMANY A Ruh - Mun
+
+ITALY F AEG S Apu - Gre
+ITALY A Apu - Gre
+ITALY A Gal - Vie
+ITALY F ION C Apu - Gre
+ITALY A Tyr - Tri
+
+RUSSIA F BAL - Den
+RUSSIA A Lvn - War
+RUSSIA A Pru - Sil
+RUSSIA F Sev S Bul - Rum
+RUSSIA A Stp - Mos
+
+TURKEY F BLA S Bul H
+TURKEY A Bul S Sev - Rum
+TURKEY A Con S Bul H
+TURKEY F EAS - Smy

@@ -42,25 +42,25 @@ public class NationState {  // This is an unintentional pun
     public void updateDrawFlag() {  // Updates draw flag to reflect player's draw conditions
         if (drawNumberCondition == 1) {
             return;
-        } else if (GameState.supplyCounts.size() <= drawNumberCondition && GameState.supplyCounts.size() > 1) {
+        } else if (Game.supplyCounts.size() <= drawNumberCondition && Game.supplyCounts.size() > 1) {
             drawFlag = true;
             return;
         }
         if (drawPartyCondition != null) {
-            if (drawPartyCondition.equals(GameState.supplyCounts.keySet())) {
+            if (drawPartyCondition.equals(Game.supplyCounts.keySet())) {
                 drawFlag = true;
             } else if (drawSCCondition != null) {
                 boolean accept = true;
                 for (NATION nation : drawSCCondition.keySet()) {
                     int[] nationSCCondition = drawSCCondition.get(nation);
                     if (nationSCCondition[0] == -1) {  // Less than or equal to
-                        if (GameState.supplyCounts.get(nation) > nationSCCondition[1])
+                        if (Game.supplyCounts.get(nation) > nationSCCondition[1])
                             accept = false;
                     } else if (nationSCCondition[0] == 0) {  // Equal to
-                        if (GameState.supplyCounts.get(nation) != nationSCCondition[1])
+                        if (Game.supplyCounts.get(nation) != nationSCCondition[1])
                             accept = false;
                     } else if (nationSCCondition[0] == 1) {  // Greater than or equal to
-                        if (GameState.supplyCounts.get(nation) < nationSCCondition[1])
+                        if (Game.supplyCounts.get(nation) < nationSCCondition[1])
                             accept = false;
                     }
                 }

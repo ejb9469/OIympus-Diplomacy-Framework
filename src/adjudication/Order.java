@@ -61,27 +61,29 @@ public class Order {
         PROVINCE province1;
         PROVINCE province2;
 
-        if (orderTypeString.equals("-")) {
-            orderType = ORDER_TYPE.MOVE;
-            province1 = PROVINCE.valueOf(lingoArray[4]);
-            province2 = province1;
-        } else if (orderTypeString.equals("H")) {
-            orderType = ORDER_TYPE.HOLD;
-            province1 = PROVINCE.valueOf(unitPositionString);
-            province2 = province1;
-        } else if (orderTypeString.equals("S")) {
-            orderType = ORDER_TYPE.SUPPORT;
-            province1 = PROVINCE.valueOf(lingoArray[4]);
-            if (lingoArray[lingoArray.length-1].equals("H"))
+        orderType = ORDER_TYPE.fromAbbr(orderTypeString);
+
+        switch (orderType) {
+            case HOLD, VOID, BUILD, REMOVE -> {
+                province1 = PROVINCE.valueOf(unitPositionString);
                 province2 = province1;
-            else
+            }
+            case MOVE, RETREAT -> {
+                province1 = PROVINCE.valueOf(lingoArray[4]);
+                province2 = province1;
+            }
+            case SUPPORT -> {
+                province1 = PROVINCE.valueOf(lingoArray[4]);
+                if (ORDER_TYPE.fromAbbr(lingoArray[lingoArray.length-1]) == ORDER_TYPE.HOLD)
+                    province2 = province1;
+                else
+                    province2 = PROVINCE.valueOf(lingoArray[6]);
+            }
+            case CONVOY -> {
+                province1 = PROVINCE.valueOf(lingoArray[4]);
                 province2 = PROVINCE.valueOf(lingoArray[6]);
-        } else if (orderTypeString.equals("C")) {
-            orderType = ORDER_TYPE.CONVOY;
-            province1 = PROVINCE.valueOf(lingoArray[4]);
-            province2 = PROVINCE.valueOf(lingoArray[6]);
-        } else {
-            throw new BadOrderException();
+            }
+            default -> throw new BadOrderException();
         }
 
         return new Order(unit, orderType, province1, province2, viaConvoy);
@@ -122,7 +124,7 @@ public class Order {
     public String toString() {
         String output = parentUnit.toString();
         if (orderType == ORDER_TYPE.MOVE) {
-            output += " -> " + pr1.name();  // .getName() would return the PROVINCE's full name
+            output += " - " + pr1.name();  // .getName() would return the PROVINCE's full name
         } else if (orderType == ORDER_TYPE.HOLD) {
             output += " H ";
         } else if (orderType == ORDER_TYPE.SUPPORT) {
@@ -130,9 +132,9 @@ public class Order {
             if (pr1.equals(pr2))
                 output += "H";
             else
-                output += "-> " + pr2.name();
+                output += "- " + pr2.name();
         } else if (orderType == ORDER_TYPE.CONVOY) {
-            output += " C " + pr1.name() + " -> " + pr2.name();
+            output += " C " + pr1.name() + " - " + pr2.name();
         } else if (orderType == ORDER_TYPE.VOID) {
             output += " VOID";
         } else {

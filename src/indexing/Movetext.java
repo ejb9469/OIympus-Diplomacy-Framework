@@ -1,7 +1,9 @@
 package indexing;
 
 import adjudication.Order;
+import exceptions.BadOrderException;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Movetext {
@@ -11,7 +13,12 @@ public class Movetext {
 
     public Movetext(String moveText, MovetextTranslator moveTextTranslator) {
         this.moveTextTranslator = moveTextTranslator;
-        this.ordersList = moveTextTranslator.parseStringToOrders(moveText);
+        try {
+            this.ordersList = moveTextTranslator.parseStringToOrders(moveText);
+        } catch (BadOrderException ex) {
+            ex.printStackTrace();
+            this.ordersList = new ArrayList<>();
+        }
     }
 
     public Movetext(String moveText) {
@@ -23,7 +30,7 @@ public class Movetext {
         this.ordersList = moveText.ordersList;
     }
 
-    public void append(String moveText) {
+    public void append(String moveText) throws BadOrderException {
         ordersList.addAll(moveTextTranslator.parseStringToOrders(moveText));
     }
 

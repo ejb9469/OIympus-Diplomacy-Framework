@@ -7,7 +7,6 @@ import java.util.Map;
 public enum PROVINCE {
 
     // TODO: Coast support
-    // TODO: Supply center border chart
 
     Boh("Bohemia", false, false),
     Bud("Budapest", false, true),

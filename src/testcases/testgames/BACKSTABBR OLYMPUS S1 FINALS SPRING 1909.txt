@@ -1,0 +1,39 @@
+AUSTRIA F Apu - ION
+AUSTRIA A Gal - Vie
+AUSTRIA A Gre - Bul
+AUSTRIA A Rum S Gre - Bul
+AUSTRIA A Ser S Rum H
+AUSTRIA A Sev - Mos
+AUSTRIA A Ukr - Mos
+AUSTRIA A Ven - Tyr
+
+ENGLAND F ENG S Lon - NTH
+ENGLAND F Fin - Swe
+ENGLAND F IRI - MAO
+ENGLAND F Lon - NTH
+ENGLAND A Mos S War - Ukr
+ENGLAND F NAO S IRI - MAO
+ENGLAND A Stp S Mos H
+
+FRANCE A Bel S Hol H
+FRANCE F LYO - Spa
+FRANCE F MAO - Bre
+FRANCE A Pic - Bre
+FRANCE A Pie - Mar
+FRANCE F TYS S Tun - ION
+
+GERMANY A Boh - Vie
+GERMANY F Den - Swe
+GERMANY A Hol - Cly
+GERMANY A Mun - Tyr
+GERMANY A Pru - War
+GERMANY A War - Ukr
+
+ITALY F Tun - ION
+
+TURKEY A Arm - Sev
+TURKEY F BLA S Bul - Rum
+TURKEY A Bul - Rum
+TURKEY F ION - Gre
+TURKEY F Nap - Apu
+TURKEY F Rom H
