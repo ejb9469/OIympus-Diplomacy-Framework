@@ -1,4 +1,4 @@
 package exceptions;
 
-public class UnitMismatchException extends Exception {
+public class UnitMismatchException extends DiplomacyException {
 }

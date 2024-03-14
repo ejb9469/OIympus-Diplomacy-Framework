@@ -39,12 +39,12 @@ public class Game implements Runnable {
             //////////////////////////////
                 if (firstRun) {  // Skip on first run
                     firstRun = false;
-                    continue;
-                }
-                // WIN & END CONDITIONS \\
-                if (checkEndStates()) {  // Check if the game is over
-                    gameOver = true;
-                    break;
+                } else {
+                    // WIN & END CONDITIONS \\
+                    if (checkEndStates()) {  // Check if the game is over
+                        gameOver = true;
+                        break;
+                    }
                 }
                 System.out.println();
             //////////////////////////////
@@ -54,8 +54,8 @@ public class Game implements Runnable {
                 try {
                     Thread.sleep(TIME_CONTROL * 1000);  // TODO: Change this for optimization
                 } catch (InterruptedException ex) {
-                    System.out.println("GAME FORCE-ENDED!!");
                     ex.printStackTrace();
+                    System.out.println("GAME FORCE-ENDED!!");
                 }
                 // ADJUDICATION \\
                 boolean retreatsNeeded = process();

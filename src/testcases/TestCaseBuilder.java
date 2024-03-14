@@ -1,9 +1,11 @@
 package testcases;
 
-import exceptions.BadOrderException;
+import exceptions.DiplomacyException;
+
+import java.io.IOException;
 
 public abstract class TestCaseBuilder {
 
-    public abstract void build(String source) throws BadOrderException;
+    public abstract void build(String source) throws DiplomacyException;
 
 }

@@ -37,7 +37,8 @@ public class TestCase {
         if (this.hasRun) return this.successFlag;
 
         Adjudicator adjudicator = new Adjudicator(new ArrayList<>(orders));
-        Thread thread = new Thread(adjudicator);
+        adjudicator.resolve();
+        /*Thread thread = new Thread(adjudicator);
         long then = new Date().getTime();
         thread.start();
         long now = new Date().getTime();
@@ -46,7 +47,7 @@ public class TestCase {
             this.successFlag = -1;  // runtime error
             this.hasRun = true;
             return this.successFlag;
-        }
+        }*/
 
         // IF NO RUNTIME ERRORS...
         List<Order> resultOrders = adjudicator.getOrders();
@@ -56,7 +57,15 @@ public class TestCase {
         for (Order order : resultOrders) {
             boolean unique = !parsedUnits.contains(order.parentUnit);  // Consider a duplicate a failure due to 1UPT rule
             boolean badRetreat = expectedUnitsWithRetreats.contains(order.parentUnit) && !order.parentUnit.testCaseRetreat;
-            boolean success = (expected.contains(order.parentUnit) && unique && !badRetreat);
+            boolean success = false;
+            if (unique && !badRetreat) {
+                for (Unit expectedUnit : expected) {
+                    if (expectedUnit.equals(order.parentUnit)) {
+                        success = true;
+                        break;
+                    }
+                }
+            }
             if (success)
                 successFlag++;
             if (unique)

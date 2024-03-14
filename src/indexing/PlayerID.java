@@ -1,11 +1,13 @@
 package indexing;
 
+import indexing.details.PlayerDetails;
+
 public class PlayerID implements Tag {
 
     private final String firstName;
     private final String middleInitial;
     private final String lastName;
-    // TODO: Alias
+    private final PlayerDetails playerDetails = PlayerDetails.NONE;
 
     public PlayerID(String firstName, String middleInitial, String lastName) {
         this.firstName = firstName;
@@ -17,12 +19,28 @@ public class PlayerID implements Tag {
         this(firstName, "", lastName);
     }
 
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public String getMiddleInitial() {
+        return middleInitial;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public TagDetails getDetails() {
+        return this.playerDetails;
+    }
+
     @Override
     public String toString() {
-        if (middleInitial.isEmpty())
-            return this.firstName + " " + this.lastName;
+        if (this.getMiddleInitial().isEmpty())
+            return this.getFirstName() + " " + this.getLastName();
         else
-            return this.firstName + " " + this.middleInitial + " " + this.lastName;
+            return this.getFirstName() + " " + this.getMiddleInitial() + " " + this.getLastName();
     }
 
 }

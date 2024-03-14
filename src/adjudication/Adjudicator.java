@@ -3,10 +3,13 @@ package adjudication;
 import exceptions.BadOrderException;
 
 import java.io.FileWriter;
-import java.util.*;
 import java.io.File;
 import java.io.IOException;
+import java.util.*;
 
+/**
+ * Singleton class responsible for adjudication logic.
+ */
 public class Adjudicator implements Runnable {
 
     private List<Order> ordersList;
@@ -23,7 +26,7 @@ public class Adjudicator implements Runnable {
         this.ordersList = ordersList;
     }
 
-    public Adjudicator(){}
+    public Adjudicator(){ this.ordersList = new ArrayList<>(); }
 
     private static final int INPUT_MODE = 2;
     private static FileWriter currentFileWriter = null;
@@ -317,7 +320,7 @@ public class Adjudicator implements Runnable {
                         }
                     }
                     if (!isStrongest && battler.orderType == ORDER_TYPE.MOVE && !battler.bounce) {
-                        System.out.println("Understrength attackers bounce() called for " + battler.parentUnit);
+                        System.out.println("Debug: Understrength attackers bounce() called for " + battler.parentUnit);
                         bounce(battler);
                         anyUnitBouncedOuter = true;
                     }
@@ -739,9 +742,11 @@ public class Adjudicator implements Runnable {
 
     /**
      * Adjudicator.run() is for thread context ONLY!!
+     * This method is only used by TEST CASES as a direct hook into the Adjudicator class.
      */
     @Override
     public void run() {
         resolve();
     }
+
 }

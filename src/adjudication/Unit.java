@@ -90,6 +90,13 @@ public class Unit {
         this.orderHistory = new ArrayList<>();
     }
 
+    public Unit(Unit unit) {
+        this(unit.getParentNation(), unit.getPosition(), unit.getUnitType());
+        this.actingOrder = unit.actingOrder;
+        this.possibleRetreats = unit.possibleRetreats;
+        this.testCaseRetreat = unit.testCaseRetreat;
+    }
+
     public String toString() {
         String output = parentNation.getAdjective() + " ";
         if (unitType == 0)
