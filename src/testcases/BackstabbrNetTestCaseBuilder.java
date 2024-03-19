@@ -14,7 +14,12 @@ import java.util.*;
 
 public class BackstabbrNetTestCaseBuilder extends TestCaseBuilder {
 
-    public static final String[] VALID_HOSTS = new String[]{"https://www.backstabbr.com/game/", "http://www.backstabbr.com/game/"};
+    public static final String[] VALID_HOSTS = new String[]{
+            "https://www.backstabbr.com/game/",
+            "http://www.backstabbr.com/game/",
+            "https://www.backstabbr.com/sandbox/",
+            "http://www.backstabbr.com/sandbox/"
+    };
 
     @Override
     public void build(String source) throws BadOrderException {
@@ -148,9 +153,21 @@ public class BackstabbrNetTestCaseBuilder extends TestCaseBuilder {
         Map<String, String> unitTypeMap = new HashMap<>();
 
         for (Object obj : unitsMap.values()) {
-            Map<String, String> unitTypeMapStr = (HashMap<String, String>) obj;
-            for (String unitStr : unitTypeMapStr.keySet())
-                unitTypeMap.put(unitStr, unitTypeMapStr.get(unitStr));
+            Map<String, Object> unitTypeMapStr = (HashMap<String, Object>) obj;
+            for (String unitStr : unitTypeMapStr.keySet()) {
+                try {
+                    unitTypeMap.put(unitStr, (String)unitTypeMapStr.get(unitStr));
+                } catch (ClassCastException ex) {
+                    // Coastal fleets contain a Map where the unit type String is for every other unit.
+                    // This Map contains the fleet's coast and unit type.
+                    // For some reason, the casting above combined with using the Java JSON Library means sometimes Strings are actually HashMaps.
+                    // This disgusting mess of casting and exception handling is the best I could do. At least it works.
+                    Map<String, String> coastTypeMojoMap = (HashMap<String, String>)unitTypeMapStr.get(unitStr);
+                    String coastedUnitStr = fixCoastFormatting(unitStr + "." + coastTypeMojoMap.get("coast"));
+                    // TODO: Utilize coasts
+                    unitTypeMap.put(unitStr, coastTypeMojoMap.get("type"));
+                }
+            }
         }
 
         Set<Order> orders = new HashSet<>();
@@ -205,7 +222,7 @@ public class BackstabbrNetTestCaseBuilder extends TestCaseBuilder {
         }
 
         String urlContent = source.strip().split("//")[1];
-        String name = "Backstabbr-Autobuilder " + urlContent.split("/")[2] + "_" + urlContent.split("/")[3];
+        String name = "Backstabbr-Autobuilder__" + urlContent.split("/")[2] + "_" + urlContent.split("/")[3];
         TestCase testCase = new TestCase(name, orders, expected, expectedRetreats);
 
         testCase.go();
@@ -227,8 +244,7 @@ public class BackstabbrNetTestCaseBuilder extends TestCaseBuilder {
     }
 
     public static void main(String[] args) throws DiplomacyException {
-        //new BackstabbrNetTestCaseBuilder().build("https://www.backstabbr.com/game/PL-137---Secret-End-Date/5195530129506304/1904/spring");
-        new BackstabbrNetTestCaseBuilder().build("https://www.backstabbr.com/game/Hera/6332766085578752/1903/spring");
+        new BackstabbrNetTestCaseBuilder().build("https://www.backstabbr.com/game/Nexus-Press-League-G62/5688622824816640/1908/spring");
     }
 
 }

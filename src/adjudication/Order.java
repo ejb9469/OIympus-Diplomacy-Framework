@@ -22,6 +22,7 @@ public class Order {
 
     // Move flags
     public boolean bounce = false;
+    public boolean invincible = false;  // Flag to deal with move orders during second passes
 
     // Convoy flags
     public boolean convoyEndangered = false;
@@ -88,6 +89,23 @@ public class Order {
 
         return new Order(unit, orderType, province1, province2, viaConvoy);
 
+    }
+
+    /**
+     * Resets all relevant flags.
+     * Currently, this method does not reset:
+     *  `invincible`
+     *  `dislodged`
+     *  `deleteMe`
+     */
+    void resetFlags() {
+        this.bounce = false;
+        this.cut = false;
+        this.viaConvoy = false;
+        this.convoyAttacked = false;
+        this.convoyEndangered = false;
+        this.noConvoy = false;
+        this.noHelpList = new ArrayList<>();
     }
 
     private void setPrInitial() {

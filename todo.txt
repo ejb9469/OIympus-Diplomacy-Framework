@@ -1,0 +1,5 @@
+1) Ensure convoys work properly after changes
+2) Finish coast compatibility and test case coast input
+3) Build a web scraper for Backstabbr games
+4) Disallow retreats into battled squares, not just the square where the attack came from
+5) Commenting

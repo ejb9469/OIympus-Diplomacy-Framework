@@ -37,7 +37,10 @@ public class TestCase {
         if (this.hasRun) return this.successFlag;
 
         Adjudicator adjudicator = new Adjudicator(new ArrayList<>(orders));
+        System.out.println("Adjudicator first pass:".toUpperCase());
         adjudicator.resolve();
+        System.out.println("Adjudicator second pass:".toUpperCase());
+        adjudicator.resolve();  // We resolve twice to fix occasional hiccups -- TODO: Make this part of the adjudicator itself
         /*Thread thread = new Thread(adjudicator);
         long then = new Date().getTime();
         thread.start();

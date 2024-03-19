@@ -79,7 +79,7 @@ public class Adjudicator implements Runnable {
                 file.createNewFile();
                 currentFileWriter = new FileWriter(file.getAbsolutePath());
                 tabsCounter = 0;
-                if (!testCaseFile.getName().contains("BACKSTABBR NEXUS")) continue;
+                //if (!testCaseFile.getName().contains("BACKSTABBR NEXUS")) continue;
                 System.out.println(testCaseFile.getName() + "\n");
                 currentFileWriter.write(testCaseFile.getName() + "\n\n");
                 orders = new ArrayList<>();
@@ -112,6 +112,7 @@ public class Adjudicator implements Runnable {
     }
 
     Map<Order, Integer> supportCounts = new HashMap<>();
+    Map<Order, Integer> originalSupportCounts = new HashMap<>();
 
     Map<Order, Order> supportMap = new HashMap<>();
 
@@ -125,31 +126,52 @@ public class Adjudicator implements Runnable {
 
     Map<PROVINCE, List<Order>> battleList = new HashMap<>();
 
+    Map<PROVINCE, Integer> preventStrength = new HashMap<>();
+
     /**
      * The resolve function - all the Diplomacy adjudication logic is in here.
      */
     public void resolve() {
 
+        // Reinitialize all fields besides `ordersList`
+        supportCounts = new HashMap<>();
+        supportMap = new HashMap<>();
+        convoyingArmies = new ArrayList<>();
+        successfulConvoyingArmies = new ArrayList<>();
+        contestedOrders = new ArrayList<>();
+        battleList = new HashMap<>();
+        preventStrength = new HashMap<>();
+
         List<Order> orders = new ArrayList<>(ordersList);
 
-        for (Order order : orders)
-            supportCounts.put(order, 0);
+        for (Order order : orders) {
+            if (order.invincible) {
+                // This field is only set after second passes thru resolve()
+                order.orderType = ORDER_TYPE.HOLD;
+                supportCounts.put(order, 9999);
+            } else {
+                supportCounts.put(order, 0);
+            }
+        }
+
+        for (PROVINCE province : PROVINCE.values())
+            preventStrength.put(province, -1);
 
         convoyingArmies = findConvoyingArmies(orders);
 
         Set<Order> voidedOrders = new HashSet<>();
         for (Order convoyingArmy : convoyingArmies) {
             List<Order> convoyPath = drawConvoyPath(orders, convoyingArmy);
-            if (convoyPath.size() == 0)
+            if (convoyPath.size() == 0) {
                 voidedOrders.add(convoyingArmy);
-            else
+            } else {
+                convoyingArmy.viaConvoy = true;
                 convoyPaths.put(convoyingArmy, convoyPath);
+            }
         }
 
-        for (Order order : voidedOrders) {
+        for (Order order : voidedOrders)
             convoyingArmies.remove(order);
-            order.orderType = ORDER_TYPE.VOID;
-        }
 
         contestedOrders = findContestedOrders(orders);
         correspondingSupports = findCorrespondingSupports(orders, contestedOrders);
@@ -171,7 +193,9 @@ public class Adjudicator implements Runnable {
                     if (order.equals(order2)) continue;
                     if (order.pr1 == order2.parentUnit.getPosition()) {
                         found = true;
-                        if (order2.orderType == ORDER_TYPE.MOVE && order.pr1 == order.pr2) {  // Support-to-hold on a MOVE order
+                        if (order2.orderType == ORDER_TYPE.MOVE && order.pr2 != order2.pr2) {  // Support-to-move does not match an actual move order
+                            invalidSupports.add(order);  // Could be replaced with `found = false;`
+                        } else if (order2.orderType == ORDER_TYPE.MOVE && order.pr1 == order.pr2) {  // Support-to-hold on a MOVE order
                             invalidSupports.add(order);
                         } else if (order2.orderType != ORDER_TYPE.MOVE && order.pr1 != order.pr2) { // Support-to-move on a stationary order
                             invalidSupports.add(order);
@@ -216,6 +240,7 @@ public class Adjudicator implements Runnable {
             if (order.orderType != ORDER_TYPE.SUPPORT) continue;
             supportCounts.put(supportMap.get(order), supportCounts.get(supportMap.get(order)) + 1);
         }
+        originalSupportCounts = new HashMap<>(supportCounts);
 
         // Set the 'no help' flags for supports on move orders attacking units of the same NATION
         for (Order supportOrder : supportMap.keySet()) {
@@ -282,36 +307,65 @@ public class Adjudicator implements Runnable {
             anyUnitBouncedOuter = false;
 
             // Mark bounces caused by the inability to swap places
+            Set<Order> noSwapDuplicates = new HashSet<>();
             boolean anyUnitBounced = true;
             while (anyUnitBounced) {
                 anyUnitBounced = false;
-                for (Order moveOrder : contestedOrdersNoConvoys) {
+                for (Order moveOrder : contestedOrders) {
                     if (moveOrder.orderType != ORDER_TYPE.MOVE) continue;
-                    Order attackedUnit = findUnitAtPosition(moveOrder.pr1, contestedOrdersNoConvoys);
+                    Order attackedUnit = findUnitAtPosition(moveOrder.pr1, contestedOrders);
                     if (attackedUnit == null) continue;
                     if (attackedUnit.orderType != ORDER_TYPE.MOVE) continue;
-                    if (attackedUnit.bounce) continue;
                     if (attackedUnit.pr1 != moveOrder.parentUnit.getPosition()) continue;
-                    if (moveOrder.parentUnit.getParentNation() == attackedUnit.parentUnit.getParentNation()
-                            || supportCounts.get(moveOrder) - moveOrder.noHelpList.size() <= supportCounts.get(attackedUnit)) {
-                        System.out.println("No-swap Type A bounce() called for " + moveOrder.parentUnit);
-                        bounce(moveOrder);
-                        anyUnitBounced = true;
-                    }
-                    if (moveOrder.parentUnit.getParentNation() == attackedUnit.parentUnit.getParentNation()
-                            || supportCounts.get(attackedUnit) - attackedUnit.noHelpList.size() <= supportCounts.get(moveOrder)) {
-                        System.out.println("No-swap Type B bounce() called for " + moveOrder.parentUnit);
-                        bounce(attackedUnit);
-                        anyUnitBounced = true;
+                    if (convoyingArmies.contains(attackedUnit)) {
+                        System.out.println("Debug: Convoy swap detected for " + moveOrder.parentUnit + " and " + attackedUnit.parentUnit);
+                    } else {
+                        int oldMoveOrderSupportCount = supportCounts.get(moveOrder);  // This is necessary for later comparison because `bounce()` sets `moveOrder`'s support count to 0.
+                        if (moveOrder.parentUnit.getParentNation() == attackedUnit.parentUnit.getParentNation()
+                                || supportCounts.get(moveOrder) - moveOrder.noHelpList.size() <= supportCounts.get(attackedUnit)) {
+                            if (noSwapDuplicates.contains(moveOrder)) continue;
+                            System.out.println("Debug: No-swap Type A bounce() called for " + moveOrder.parentUnit + " and " + attackedUnit.parentUnit);
+                            noSwapDuplicates.add(moveOrder);
+                            bounce(moveOrder);
+                            anyUnitBounced = true;
+                        }
+                        if (moveOrder.parentUnit.getParentNation() == attackedUnit.parentUnit.getParentNation()
+                                || supportCounts.get(attackedUnit) - attackedUnit.noHelpList.size() <= oldMoveOrderSupportCount) {
+                            if (noSwapDuplicates.contains(attackedUnit)) continue;
+                            System.out.println("Debug: No-swap Type B bounce() called for " + moveOrder.parentUnit + " and " + attackedUnit.parentUnit);
+                            noSwapDuplicates.add(attackedUnit);
+                            bounce(attackedUnit);
+                            anyUnitBounced = true;
+                        }
                     }
                 }
             }
+
+            // Handle 'border battles'
+            for (Order moveOrder : contestedOrders) {
+                if (moveOrder.orderType != ORDER_TYPE.MOVE) continue;
+                for (Order moveOrder2 : contestedOrders) {
+                    if (moveOrder2.orderType != ORDER_TYPE.MOVE) continue;
+                    if (moveOrder.equals(moveOrder2)) continue;
+                    if (moveOrder.pr1 == moveOrder2.parentUnit.getPosition() && moveOrder2.pr1 == moveOrder.parentUnit.getPosition()) {
+                        // We're dealing with a 'border battle'
+                        if (supportCounts.get(moveOrder).equals(supportCounts.get(moveOrder2))) {
+                            preventStrength.put(moveOrder.pr1, supportCounts.get(moveOrder) + 1);
+                            preventStrength.put(moveOrder2.pr1, supportCounts.get(moveOrder2) + 1);
+                        }
+                    }
+                }
+            }
+
+            List<Order> battlersToBounce = new ArrayList<>();
 
             // Mark bounces suffered by understrength attackers
             for (PROVINCE province : PROVINCE.values()) {
                 for (Order battler : battleList.get(province)) {
                     int battlerSupportCount = supportCounts.get(battler);
-                    boolean isStrongest = true;
+                    boolean isStrongest = battlerSupportCount > preventStrength.get(battler.pr1);
+                    if (battlerSupportCount <= preventStrength.get(battler.pr1))
+                        System.out.println("Debug: Beleaguered garrison detected at " + battler.pr1 + " for unit " + battler);
                     for (Order battler2 : battleList.get(province)) {
                         if (battler.equals(battler2)) continue;
                         if (supportCounts.get(battler2) >= battlerSupportCount) {
@@ -321,11 +375,15 @@ public class Adjudicator implements Runnable {
                     }
                     if (!isStrongest && battler.orderType == ORDER_TYPE.MOVE && !battler.bounce) {
                         System.out.println("Debug: Understrength attackers bounce() called for " + battler.parentUnit);
-                        bounce(battler);
+                        battlersToBounce.add(battler);
                         anyUnitBouncedOuter = true;
                     }
                 }
             }
+
+            // Bounce understrength attackers
+            for (Order battler : battlersToBounce)
+                bounce(battler);
 
             if (anyUnitBouncedOuter) continue;
 
@@ -348,7 +406,7 @@ public class Adjudicator implements Runnable {
                 if (victim == null) continue;
                 if (victim.orderType == ORDER_TYPE.MOVE && !victim.bounce) continue;
                 if (victim.parentUnit.getParentNation() == strongestBattler.parentUnit.getParentNation()) {
-                    System.out.println("No self-dislodge Type A bounce() called for " + strongestBattler.parentUnit);
+                    System.out.println("Debug: No self-dislodge Type A bounce() called for " + strongestBattler.parentUnit);
                     bounce(strongestBattler);
                     anyUnitBouncedOuter = true;
                     continue;
@@ -357,12 +415,37 @@ public class Adjudicator implements Runnable {
                 for (Order battler : battleList.get(province)) {
                     if (battler.equals(strongestBattler)) continue;
                     if (supportCounts.get(battler) >= strongestBattlerSupportCount) {
-                        System.out.println("No self-dislodge Type B bounce() called for " + strongestBattler.parentUnit);
+                        System.out.println("Debug: No self-dislodge Type B bounce() called for " + strongestBattler.parentUnit);
                         bounce(strongestBattler);
                         anyUnitBouncedOuter = true;
                         break;
                     }
                 }
+
+                int sameNationSupportCount = 0;
+                for (Order supportOrder : contestedOrders) {
+                    if (supportOrder.orderType != ORDER_TYPE.SUPPORT) continue;
+                    if (supportMap.get(supportOrder) != strongestBattler) continue;
+                    if (supportOrder.parentUnit.getParentNation() == victim.parentUnit.getParentNation()
+                            && strongestBattler.parentUnit.getParentNation() != supportOrder.parentUnit.getParentNation()) {
+                        sameNationSupportCount++;
+                    }
+                }
+
+                if (sameNationSupportCount == 0) continue;
+
+                for (Order battler : battleList.get(province)) {
+                    if (battler.equals(strongestBattler)) continue;
+                    if (originalSupportCounts.get(battler) >= strongestBattlerSupportCount - sameNationSupportCount) {
+                        // The above doesn't work without using `originalSupportCounts` because Austrian A Bud - Rum has already bounced, depleting its support count
+                        // This could possibly break, but I'm not sure how. It doesn't seem possible right now. (03/19/24)
+                        System.out.println("Debug: No self-dislodge Type C bounce() called for " + strongestBattler.parentUnit);
+                        bounce(strongestBattler);
+                        anyUnitBouncedOuter = true;
+                        break;
+                    }
+                }
+
             }
 
             if (anyUnitBouncedOuter) continue;
@@ -391,10 +474,10 @@ public class Adjudicator implements Runnable {
             Order victim = findUnitAtPosition(moveOrder.pr1, contestedOrders);
             if (victim != null) {
                 if (victim.orderType != ORDER_TYPE.MOVE || victim.bounce) {
-                    if (contestedOrdersNoConvoys.contains(victim)
+                    if (contestedOrders/*NoConvoys*/.contains(victim)
                             && victim.orderType == ORDER_TYPE.MOVE
                             && victim.pr1 == moveOrder.parentUnit.getPosition()
-                            && contestedOrdersNoConvoys.contains(moveOrder))
+                            && contestedOrders/*NoConvoys*/.contains(moveOrder))
                     {
                         List<Order> battlersAtSource = battleList.get(victim.pr1);
                         battlersAtSource.remove(victim);
@@ -414,7 +497,14 @@ public class Adjudicator implements Runnable {
             unbounce(moveOrder.parentUnit.getPosition());
             changedOrders.remove(moveOrder);  // This should work b/c of the .equals() override in dip.Order
             moveOrder.parentUnit.setPosition(moveOrder.pr1);  // The move itself!
+            moveOrder.invincible = true;  // Only relevant for second passes
             changedOrders.add(moveOrder);
+        }
+
+        for (Order order : changedOrders) {
+            order.resetFlags();
+            if (order.dislodged)
+                order.orderType = ORDER_TYPE.VOID;
         }
 
         ordersList = changedOrders;
@@ -427,7 +517,7 @@ public class Adjudicator implements Runnable {
             victim.parentUnit.populateRetreatsList(attackOriginMap.get(victim), unitsList);
         }
 
-        printUnits(ordersList, "FINAL STATE: ");
+        printUnits(ordersList, "\nFINAL STATE: ");
         System.out.println();
         if (currentFileWriter != null) {
             try {
@@ -487,7 +577,7 @@ public class Adjudicator implements Runnable {
         if (moveOrder.parentUnit.getParentNation() == defender.parentUnit.getParentNation()) return false;
         if (defender.pr2 == moveOrder.parentUnit.getPosition()) return false;
         if (convoyingArmies.contains(moveOrder)) {
-            System.out.println("Adjudicator.cutSupport() is handling a convoying army...");  // Debug
+            System.out.println("Debug: Adjudicator.cutSupport() is handling a convoying army...");  // Debug
         }
         defender.cut = true;
         Order supported = supportMap.get(defender);
@@ -558,11 +648,12 @@ public class Adjudicator implements Runnable {
     private List<Order> findConvoyingArmies(List<Order> orders) {
         List<Order> convoyingArmies = new ArrayList<>();
         for (Order order : orders) {
+            if (order.parentUnit.getUnitType() != 0) continue;
             if (order.orderType != ORDER_TYPE.MOVE) continue;
             if (!order.parentUnit.getPosition().isCoastal()) continue;  // You can't convoy from or to inland provinces
             if (!order.pr1.isCoastal()) continue;
-            if (!order.parentUnit.getPosition().isAdjacentTo(order.pr1) || order.viaConvoy)
-                convoyingArmies.add(order);
+            //if (!order.parentUnit.getPosition().isAdjacentTo(order.pr1) || order.viaConvoy)
+            convoyingArmies.add(order);
         }
         return convoyingArmies;
     }
