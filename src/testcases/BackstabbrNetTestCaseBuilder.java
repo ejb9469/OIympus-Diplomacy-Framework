@@ -2,6 +2,7 @@ package testcases;
 
 import adjudication.*;
 import exceptions.BadOrderException;
+import exceptions.BadURLException;
 import exceptions.DiplomacyException;
 import org.json.*;
 
@@ -9,10 +10,25 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
 
 public class BackstabbrNetTestCaseBuilder extends TestCaseBuilder {
+
+    public static final boolean PROCESS_ENTIRE_GAME = true;
+
+    public static final boolean MULTIPLE_URLS = false;
+
+    public static final String[] URLS = new String[]{
+            append1901Spring("https://www.backstabbr.com/game/PL-185---Anon--SecretEnd/5104611115794432"),
+            append1901Spring("https://www.backstabbr.com/game/2024-SC-R3B1-Hakkinen/5068731283013632"),
+            append1901Spring("https://www.backstabbr.com/game/Speedboat-Septet/5190055435304960"),
+            append1901Spring("https://www.backstabbr.com/game/Diplostrats-Speedboat/5147499523604480"),
+            append1901Spring("https://www.backstabbr.com/game/Nexus-Game-21/4681649772560384"),
+    };
+
+    public static final String URL = "https://www.backstabbr.com/game/Nexus-Game-21/4681649772560384/1908/fall";  // Used when MULTIPLE_URLS is false
 
     public static final String[] VALID_HOSTS = new String[]{
             "https://www.backstabbr.com/game/",
@@ -21,8 +37,10 @@ public class BackstabbrNetTestCaseBuilder extends TestCaseBuilder {
             "http://www.backstabbr.com/sandbox/"
     };
 
+    private static TestCase currentTestCase = null;
+
     @Override
-    public void build(String source) throws BadOrderException {
+    public void build(String source) throws BadOrderException, BadURLException {
 
         boolean valid = false;
         for (String host : VALID_HOSTS) {
@@ -32,7 +50,7 @@ public class BackstabbrNetTestCaseBuilder extends TestCaseBuilder {
             }
         }
         if (!valid)
-            throw new IllegalArgumentException("Invalid URL specified.");
+            throw new BadURLException();
 
         URL url;
         InputStream iStream;
@@ -227,6 +245,7 @@ public class BackstabbrNetTestCaseBuilder extends TestCaseBuilder {
 
         testCase.go();
         System.out.println(testCase);
+        currentTestCase = testCase;
 
     }
 
@@ -243,8 +262,116 @@ public class BackstabbrNetTestCaseBuilder extends TestCaseBuilder {
         return provinceStr;
     }
 
+    public static String getNextURL(String prevURL) throws BadURLException {
+
+        // https://www.backstabbr.com/game/PL-185---Anon--SecretEnd/5104611115794432/1908/fall
+
+        boolean valid = false;
+        for (String host : VALID_HOSTS) {
+            if (prevURL.startsWith(host)) {
+                valid = true;
+                break;
+            }
+        }
+        if (!valid)
+            throw new BadURLException();
+
+        String nextURLAttempt = null;
+        if (prevURL.endsWith("spring"))
+            nextURLAttempt = prevURL.split("spring")[0] + "fall";
+        else if (prevURL.endsWith("fall")) {
+            String base = prevURL.substring(0, prevURL.length() - 10);  // "winter", "/", and year (e.g. 1908)
+            int year = Integer.parseInt(prevURL.substring(prevURL.length() - 9, prevURL.length() - 5));
+            nextURLAttempt = String.format("%s/%d/spring", base, year+1);
+        }
+
+        if (nextURLAttempt == null)
+            throw new BadURLException();
+
+        try {
+            URL url = new URL(nextURLAttempt);
+            url.openConnection();
+        } catch (MalformedURLException ex) {
+            ex.printStackTrace();
+            System.out.println("Malformed URL");
+            throw new BadURLException();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            System.out.println("Bad URL");
+            return null;
+        }
+
+        return nextURLAttempt;
+
+    }
+
+    public static String append1901Spring(String url) {
+        if (url.endsWith("/"))
+            return url + "1901/spring";
+        else
+            return url + "/1901/spring";
+    }
+
     public static void main(String[] args) throws DiplomacyException {
-        new BackstabbrNetTestCaseBuilder().build("https://www.backstabbr.com/game/Nexus-Press-League-G62/5688622824816640/1908/spring");
+
+        if (MULTIPLE_URLS) {
+
+            Map<String, String> allResults = new TreeMap<>();
+
+            for (String url : URLS) {
+
+                if (PROCESS_ENTIRE_GAME) {
+
+                    Map<String, String> results = new TreeMap<>();
+
+                    String nextURL = url;
+                    new BackstabbrNetTestCaseBuilder().build(nextURL);
+                    results.put(nextURL, currentTestCase.toString());
+                    while (true) {
+                        try {
+                            nextURL = getNextURL(nextURL);
+                            if (nextURL == null)
+                                break;
+                            new BackstabbrNetTestCaseBuilder().build(nextURL);
+                            if (currentTestCase.toString().endsWith("(0/0)"))
+                                break;
+                            results.put(nextURL, currentTestCase.toString());
+                        } catch (Exception ex) {
+                            break;
+                        }
+                    }
+
+                    int numerSum = 0;
+                    int denomSum = 0;
+                    for (String resultsKey : results.keySet()) {
+                        System.out.printf("%s :: %s\n", resultsKey, results.get(resultsKey));
+                        numerSum += Integer.parseInt(results.get(resultsKey).split("\\(")[1].split("/")[0]);
+                        denomSum += Integer.parseInt(results.get(resultsKey).split("\\(")[1].split("/")[1].split("\\)")[0]);
+                    }
+                    System.out.printf("\nTOTAL: %d/%d\n", numerSum, denomSum);
+                    allResults.put(url, String.format("%d/%d", numerSum, denomSum));
+
+                } else {
+                    new BackstabbrNetTestCaseBuilder().build(url);
+                }
+
+            }
+
+            int numerSum = 0;
+            int denomSum = 0;
+            for (String resultsKey : allResults.keySet()) {
+                System.out.printf("%s :: %s\n", resultsKey, allResults.get(resultsKey));
+                numerSum += Integer.parseInt(allResults.get(resultsKey).split("/")[0]);
+                denomSum += Integer.parseInt(allResults.get(resultsKey).split("/")[1]);
+            }
+            System.out.println("\n=================================");
+            System.out.printf("TOTAL: %d/%d\n", numerSum, denomSum);
+            System.out.println("=================================");
+
+        } else {
+            new BackstabbrNetTestCaseBuilder().build(URL);
+        }
+
     }
 
 }

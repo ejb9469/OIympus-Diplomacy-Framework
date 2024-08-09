@@ -143,6 +143,7 @@ public class Adjudicator implements Runnable {
         preventStrength = new HashMap<>();
 
         List<Order> orders = new ArrayList<>(ordersList);
+        // Collections.shuffle(orders);
 
         for (Order order : orders) {
             if (order.invincible) {
