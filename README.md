@@ -1,5 +1,6 @@
-# Olympus Diplomacy Framework
-The Olympus Diplomacy Framework is the backend portion of a Diplomacy webapp with several planned features:
+# Diplomacy23 (DEPRECATED SEP 2025)
+
+`Diplomacy23` was the backend portion of a Diplomacy webapp with several planned features:
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;A) Adjudication & Game Replaying System
 
